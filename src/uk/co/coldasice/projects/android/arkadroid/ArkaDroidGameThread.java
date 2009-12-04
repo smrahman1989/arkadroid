@@ -11,6 +11,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
+import android.hardware.SensorManager;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -45,6 +46,9 @@ public class ArkaDroidGameThread extends Thread {
 	private boolean winner = false;
 
 	private boolean resetSafe;
+	
+	private long lastupdate;
+	private final double PHYSICS_SPEED = 13.0;
 	
 	public ArkaDroidGameThread(SurfaceHolder holder, Context context) {
 		this.holder = holder;
@@ -98,7 +102,7 @@ public class ArkaDroidGameThread extends Thread {
 			finally {
 				if (canv != null) holder.unlockCanvasAndPost(canv);
 			}
-			Thread.yield();
+			//Thread.yield();
 		}
 	}
 
@@ -144,13 +148,17 @@ public class ArkaDroidGameThread extends Thread {
 		}
 		ballDx = 1;
 		ballDy = 1;
+		lastupdate = System.currentTimeMillis();
 	}
 
 	private void updateGame() {
 		
+		double timediff = (System.currentTimeMillis() - lastupdate) / PHYSICS_SPEED;
+		lastupdate = System.currentTimeMillis();
+		
 		if (touching) {
-			if (lastTouchX < w/3) paddleDx_mag-=1.2;
-			else if (lastTouchX > (w - w/3)) paddleDx_mag += 1.2;
+			if (lastTouchX < w/3) paddleDx_mag -= (1.0 * timediff);
+			else if (lastTouchX > (w - w/3)) paddleDx_mag += (1.0 * timediff);
 		}
 		
 		if (spriteBall.collidesWith(spritePaddle)) {
@@ -179,10 +187,11 @@ public class ArkaDroidGameThread extends Thread {
 				spriteBall.setY(spriteBall.getY() - 1);
 			}
 			// speed up the ball a bit
-			if (ballDx < 0) ballDx -= 0.2;
-			else ballDx += 0.2;
-			if (ballDy < 0) ballDy -= 0.2;
-			else ballDy += 0.2;
+			double ballDiff = (0.2 * timediff);
+			if (ballDx < 0) ballDx -= ballDiff;
+			else ballDx += ballDiff;
+			if (ballDy < 0) ballDy -= ballDiff;
+			else ballDy += ballDiff;
 		}
 		
 		boolean allDead = true;
@@ -210,10 +219,10 @@ public class ArkaDroidGameThread extends Thread {
 			pause();
 		}
 
-		spriteBall.setX(spriteBall.getX() + ballDx);
-		spriteBall.setY(spriteBall.getY() + ballDy);
+		spriteBall.setX(spriteBall.getX() + ballDx*timediff);
+		spriteBall.setY(spriteBall.getY() + ballDy*timediff);
 		// Log.d("ArkaDroidGameThread.updateGame()", "paddleDirection: " + paddleDirection + ", paddleDx_mag: " + paddleDx_mag);
-		spritePaddle.setX(spritePaddle.getX() + paddleDx_mag);
+		spritePaddle.setX(spritePaddle.getX() + paddleDx_mag*timediff);
 		if (paddleDx_mag < 0) paddleDx_mag = Math.min(0, paddleDx_mag + 1);
 		else if (paddleDx_mag > 0) paddleDx_mag = Math.max(0, paddleDx_mag - 1);
 	}
@@ -259,11 +268,13 @@ public class ArkaDroidGameThread extends Thread {
 	public boolean keyDown(int keyCode, KeyEvent msg) {
 		synchronized (holder) {
 			if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-				paddleDx_mag-=2;
+				lastTouchX = 0;
+				touching = true;
 				return true;
 			}
 			else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-				paddleDx_mag+=2;
+				lastTouchX = w;
+				touching = true;
 				return true;
 			}
 			
@@ -276,6 +287,7 @@ public class ArkaDroidGameThread extends Thread {
         synchronized (holder) {
         	if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT
                         || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+        		touching  = false;
                 handled = true;
             }
         }

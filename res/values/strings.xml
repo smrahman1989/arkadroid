@@ -4,4 +4,7 @@
     <string name="app_name">ArkaDroid</string>
 	<string name="menu_start">Start/Restart</string>
 	<string name="arkadroid_text"></string>
+
+<string name="tilt_toggle">Toggle Tilt</string>
+
 </resources>
