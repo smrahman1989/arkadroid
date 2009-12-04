@@ -61,7 +61,7 @@ public class ArkaDroidGameThread extends Thread {
 		spritePaddle = new Sprite(r.getDrawable(R.drawable.paddle), this);
 		spritePaddle.setXMiddle(w/2);
 		spriteBall.setXYMiddle(w/2, 150);
-		imgBackground = BitmapFactory.decodeResource(r, R.drawable.daft);
+		imgBackground = BitmapFactory.decodeResource(r, R.drawable.texture);
 		bricks = new ArrayList<Sprite>();
 		Drawable brickImg = r.getDrawable(R.drawable.brick);
 		int howManyBricks = w / brickImg.getIntrinsicWidth();
