@@ -11,8 +11,10 @@ import android.view.Window;
 public class ArkaDroid extends Activity {
 
 	private static final int MENU_START = 1;
+	private static final int MENU_TILT = 2;
 	private ArkaDroidView arkaDroidView;
 	private ArkaDroidGameThread gameThread;
+	private TiltListener tiltListener;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +29,8 @@ public class ArkaDroid extends Activity {
         // get handles to the LunarView from XML, and its LunarThread
         arkaDroidView = (ArkaDroidView) findViewById(R.id.arkadroid);
         gameThread = arkaDroidView.getGameThread();
-
+        tiltListener = new TiltListener(this, gameThread);
+        	
         if (savedInstanceState == null) {
             // we were just launched: set up a new game
             // gameThread.setState(LunarThread.STATE_READY);
@@ -40,7 +43,8 @@ public class ArkaDroid extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		menu.add(0, MENU_START, 0, R.string.menu_start);
+		menu.add(0, MENU_START, Menu.NONE, R.string.menu_start);
+		menu.add(0, MENU_TILT, Menu.NONE, R.string.tilt_toggle);
 		return true;
 	}
 	
@@ -48,6 +52,10 @@ public class ArkaDroid extends Activity {
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
 			case MENU_START: gameThread.gameGo(); return true;
+			case MENU_TILT:
+				if(tiltListener.isOn())tiltListener.stop();
+				else tiltListener.start();
+				return true;
 		}
 		return false;
 	}
