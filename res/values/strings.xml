@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>	
+<resources>
+    
+    <string name="app_name">ArkaDroid</string>
+	<string name="menu_start">Start/Restart</string>
+	<string name="arkadroid_text"></string>
+</resources>
