@@ -2,7 +2,8 @@ package uk.co.coldasice.projects.android.arkadroid;
 
 import java.util.ArrayList;
 
-import uk.co.coldasice.projects.android.breakout.R;
+import uk.co.coldasice.projects.android.ArkaDroid.R;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -13,6 +14,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.hardware.SensorManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -21,6 +23,10 @@ public class ArkaDroidGameThread extends Thread {
 
 	enum State {
 		paused, running
+	}
+	
+	public enum Moving {
+		NO, LEFT, RIGHT
 	}
 
 	private static final int MAX_LIVES = 5;
@@ -37,8 +43,7 @@ public class ArkaDroidGameThread extends Thread {
 	private double ballDx = 3;
 	private double ballDy = 3;
 	State state = State.paused;
-	private boolean touching = false;
-	private int lastTouchX;
+	private Moving moving = Moving.NO;
 	ArrayList<Sprite> bricks;
 	private String infoText = "";
 	private int livesLeft = MAX_LIVES + 1;
@@ -49,6 +54,7 @@ public class ArkaDroidGameThread extends Thread {
 	
 	private long lastupdate;
 	private final double PHYSICS_SPEED = 13.0;
+	private final double PADDLE_SPEED = 4.0;
 	
 	public ArkaDroidGameThread(SurfaceHolder holder, Context context) {
 		this.holder = holder;
@@ -102,7 +108,6 @@ public class ArkaDroidGameThread extends Thread {
 			finally {
 				if (canv != null) holder.unlockCanvasAndPost(canv);
 			}
-			//Thread.yield();
 		}
 	}
 
@@ -155,11 +160,6 @@ public class ArkaDroidGameThread extends Thread {
 		
 		double timediff = (System.currentTimeMillis() - lastupdate) / PHYSICS_SPEED;
 		lastupdate = System.currentTimeMillis();
-		
-		if (touching) {
-			if (lastTouchX < w/3) paddleDx_mag -= (1.0 * timediff);
-			else if (lastTouchX > (w - w/3)) paddleDx_mag += (1.0 * timediff);
-		}
 		
 		if (spriteBall.collidesWith(spritePaddle)) {
 			double ballMidx = spriteBall.getMidX();
@@ -222,9 +222,14 @@ public class ArkaDroidGameThread extends Thread {
 		spriteBall.setX(spriteBall.getX() + ballDx*timediff);
 		spriteBall.setY(spriteBall.getY() + ballDy*timediff);
 		// Log.d("ArkaDroidGameThread.updateGame()", "paddleDirection: " + paddleDirection + ", paddleDx_mag: " + paddleDx_mag);
-		spritePaddle.setX(spritePaddle.getX() + paddleDx_mag*timediff);
-		if (paddleDx_mag < 0) paddleDx_mag = Math.min(0, paddleDx_mag + 1);
-		else if (paddleDx_mag > 0) paddleDx_mag = Math.max(0, paddleDx_mag - 1);
+		
+		if(moving==Moving.LEFT){
+			spritePaddle.setX(spritePaddle.getX() - paddleDx_mag*timediff);
+			//paddleDx_mag = Math.max(0, paddleDx_mag - 1);
+		}else if(moving==Moving.RIGHT){
+			spritePaddle.setX(spritePaddle.getX() + paddleDx_mag*timediff);
+			//paddleDx_mag = Math.min(0, paddleDx_mag + 1);
+		}
 	}
 
 	public void pause() {
@@ -265,45 +270,47 @@ public class ArkaDroidGameThread extends Thread {
 		}
 	}
 	
-	public boolean keyDown(int keyCode, KeyEvent msg) {
+	public void MovePaddle(Moving moving, double speed) {
 		synchronized (holder) {
-			if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-				lastTouchX = 0;
-				touching = true;
-				return true;
-			}
-			else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-				lastTouchX = w;
-				touching = true;
-				return true;
-			}
-			
-			return false;
+			this.moving = moving;
+			paddleDx_mag = speed;
+			//Log.d("MovePaddle", moving+" "+speed);
 		}
 	}
 	
 	boolean keyUp(int keyCode, KeyEvent msg) {
-        boolean handled = false;
-        synchronized (holder) {
-        	if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT
-                        || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-        		touching  = false;
-                handled = true;
-            }
-        }
-        return handled;
-    }
+		if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT
+				|| keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+			MovePaddle(Moving.NO, 0);
+			return true;
+		}
+		return false;
+	}
+
+	public boolean keyDown(int keyCode, KeyEvent msg) {
+		if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+			MovePaddle(Moving.LEFT, PADDLE_SPEED);
+			return true;
+		}
+		else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+			MovePaddle(Moving.RIGHT, PADDLE_SPEED);
+			return true;
+		}
+		
+		return false;
+	}
 
 	public boolean onTouchEvent(MotionEvent event) {
 		int action = event.getAction();
-		lastTouchX = (int)event.getX();
+		int where = (int)event.getX();
 		switch (action) {
 			case MotionEvent.ACTION_DOWN: {
-				touching = true;
+				if (where < w/3) MovePaddle(Moving.LEFT, PADDLE_SPEED);
+				else if (where > (w - w/3)) MovePaddle(Moving.RIGHT, PADDLE_SPEED);
 				return true;
 			}
 			case MotionEvent.ACTION_UP: {
-				touching  = false;
+				MovePaddle(Moving.NO, 0);
 				return true;
 			}
 		}

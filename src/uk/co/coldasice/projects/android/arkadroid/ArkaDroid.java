@@ -1,6 +1,6 @@
 package uk.co.coldasice.projects.android.arkadroid;
 
-import uk.co.coldasice.projects.android.breakout.R;
+import uk.co.coldasice.projects.android.ArkaDroid.R;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,8 +10,8 @@ import android.view.Window;
 
 public class ArkaDroid extends Activity {
 
-	private static final int MENU_START = 1;
-	private static final int MENU_TILT = 2;
+	private static final int MENU_START = 0;
+	private static final int MENU_TILT = 1;
 	private ArkaDroidView arkaDroidView;
 	private ArkaDroidGameThread gameThread;
 	private TiltListener tiltListener;
@@ -44,7 +44,7 @@ public class ArkaDroid extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		menu.add(0, MENU_START, Menu.NONE, R.string.menu_start);
-		menu.add(0, MENU_TILT, Menu.NONE, R.string.tilt_toggle);
+		menu.add(0, MENU_TILT, Menu.NONE, R.string.tilt_toggle_on);
 		return true;
 	}
 	
@@ -53,8 +53,14 @@ public class ArkaDroid extends Activity {
 		switch (item.getItemId()) {
 			case MENU_START: gameThread.gameGo(); return true;
 			case MENU_TILT:
-				if(tiltListener.isOn())tiltListener.stop();
-				else tiltListener.start();
+				if(tiltListener.isOn()){
+					item.setTitle(R.string.tilt_toggle_on);
+					tiltListener.stop();
+				}
+				else{
+					item.setTitle(R.string.tilt_toggle_off);
+					tiltListener.start();
+				}
 				return true;
 		}
 		return false;

@@ -5,6 +5,7 @@
 	<string name="menu_start">Start/Restart</string>
 	<string name="arkadroid_text"></string>
 
-<string name="tilt_toggle">Toggle Tilt</string>
+<string name="tilt_toggle_on">Tilt On</string>
 
+<string name="tilt_toggle_off">Tilt Off</string>
 </resources>
