@@ -3,6 +3,7 @@ package uk.co.coldasice.projects.android.arkadroid;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 public class Sprite {
 
@@ -93,7 +94,7 @@ public class Sprite {
 		return getBounds().intersect(sp.getBounds());
 	}
 
-	private Rect getBounds() {
+	Rect getBounds() {
 		rect.set((int)x, (int)y, (int)(x+w), (int)(y+h));
 		return rect;
 	}

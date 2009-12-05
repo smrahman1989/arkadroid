@@ -91,7 +91,7 @@ public class ArkaDroidGameThread extends Thread {
 	public void run() {
 		Canvas canv;
 		resetSafe = true;
-		resetSprites();
+		reset();
 		while (mRun) {
 			canv = null;
 			try {
@@ -101,7 +101,7 @@ public class ArkaDroidGameThread extends Thread {
 						resetSafe = true;
 						updateGame();
 					}
-					else if (state == State.paused) resetSprites();
+					else if (state == State.paused) reset();
 					render(canv);
 				}
 			}
@@ -126,7 +126,7 @@ public class ArkaDroidGameThread extends Thread {
 		canv.drawText(infoText, 10, 20, paint);
 	}
 
-	private void resetSprites() {
+	private void reset() {
 		if (!resetSafe) return;
 		boolean fullReset = false;
 		if (state != State.paused) livesLeft--;
@@ -137,6 +137,7 @@ public class ArkaDroidGameThread extends Thread {
 		}
 		else {
 			if (winner) {
+				fullReset = true;
 				infoText = "YOU WON!";
 				livesLeft = MAX_LIVES;
 			}
@@ -199,6 +200,7 @@ public class ArkaDroidGameThread extends Thread {
 			if (brick.dead()) continue;
 			allDead = false;
 			if (brick.collidesWith(spriteBall)) {
+//				Log.d("brick dead", "ballPos: " + spriteBall.getBounds() + ", brickPos: " + brick.getBounds() + ", ballDirection: " + ballDx + ", " + ballDy);
 				ballDy *= -1;
 				brick.kill();
 				break;
@@ -247,7 +249,7 @@ public class ArkaDroidGameThread extends Thread {
 	
 	public void gameGo() {
 		state = State.running;
-		resetSprites();
+		reset();
 	}
 
 	public void setSize(int width, int height) {
