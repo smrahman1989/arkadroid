@@ -2,17 +2,19 @@ package uk.co.coldasice.projects.android.arkadroid;
 
 import java.util.List;
 
+import uk.co.coldasice.projects.android.arkadroid.ArkaDroidGameThread.Moving;
+
 import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.util.Log;
-import android.view.KeyEvent;
 
 public class TiltListener implements SensorEventListener{
 
+	private final int DEADSPOT = 5;
+	private final double TILTSPEED = 3.0;
 	private boolean on = false;
 	private SensorManager sensorManager;
 	private List<Sensor> sensors;
@@ -21,6 +23,7 @@ public class TiltListener implements SensorEventListener{
 	private long currentTime = -1;
 	private enum Tilt {NONE, LEFT, RIGHT};
 	private Tilt tilt = Tilt.NONE;
+	
 	
 	private ArkaDroidGameThread gameThread;
 
@@ -65,26 +68,20 @@ public class TiltListener implements SensorEventListener{
 
 		currentTime = System.currentTimeMillis();
 
-		if ((currentTime - lastUpdate) > 50) {
+		if ((currentTime - lastUpdate) > 100) {
 			lastUpdate = currentTime;
-			
-			if (Math.abs(event.values[2]) > 20) {
+			double absvalue = Math.abs(event.values[2]);
+			if (absvalue > DEADSPOT) {
 				if (event.values[2] > 0){
-					if (tilt != Tilt.LEFT){
-						gameThread.keyUp(KeyEvent.KEYCODE_DPAD_LEFT, null);
-						gameThread.keyDown(KeyEvent.KEYCODE_DPAD_LEFT, null);
-						tilt = Tilt.LEFT;
-					}
+					gameThread.MovePaddle(Moving.LEFT, (absvalue-DEADSPOT)/TILTSPEED);
+					tilt = Tilt.LEFT;
 				}
 				else{
-					if (tilt != Tilt.RIGHT){
-						gameThread.keyUp(KeyEvent.KEYCODE_DPAD_RIGHT, null);
-						gameThread.keyDown(KeyEvent.KEYCODE_DPAD_RIGHT, null);
-						tilt = Tilt.RIGHT;
-					}
+					gameThread.MovePaddle(Moving.RIGHT, (absvalue-DEADSPOT)/TILTSPEED);
+					tilt = Tilt.RIGHT;
 				}
 			} else {
-				if (tilt!=Tilt.NONE) gameThread.keyUp(KeyEvent.KEYCODE_DPAD_RIGHT, null);
+				if (tilt!=Tilt.NONE) gameThread.MovePaddle(Moving.NO, 0.0);
 				tilt = Tilt.NONE;
 			}
 		}
