@@ -14,4 +14,6 @@ http://arkadroid.googlecode.com/svn/trunk/Images_etc/logo/arkanoid_squashedlogo_
 
 http://arkadroid.googlecode.com/svn/trunk/Images_etc/logo/arkanoid_squashedlogo_rounded.png
 
+http://i.imgur.com/IG0tx.jpg
+
 I can't decide...
