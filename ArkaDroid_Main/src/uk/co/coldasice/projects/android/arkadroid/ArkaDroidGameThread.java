@@ -1,5 +1,6 @@
 package uk.co.coldasice.projects.android.arkadroid;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -59,6 +60,12 @@ public class ArkaDroidGameThread extends Thread {
 	
 	private final Random random = new Random();
 
+	private int paddleCollisions = 0;
+
+	private static final DecimalFormat df = new DecimalFormat("0.000");
+
+	private double timediff;
+	
 	
 	public ArkaDroidGameThread(SurfaceHolder holder, Context context) {
 		this.holder = holder;
@@ -135,10 +142,16 @@ public class ArkaDroidGameThread extends Thread {
 		}
 		else {
 			paint.setTextSize(12);
-			canv.drawText("Score: " + (currentScore + getScoreToAdd()), 10, 28, paint);
 			canv.drawText(infoText, 10, 14, paint);
+			canv.drawText("Paddle collisions: " + paddleCollisions + ", speed: " + df.format(getBallSpeed()), 120, 14, paint);
+			canv.drawText("Score: " + (currentScore + getScoreToAdd()), 10, 28, paint);
+			canv.drawText("Timediff: " + df.format(timediff), 120, 28, paint);
 		}
 		
+	}
+	
+	private double getBallSpeed() {
+		 return Math.sqrt((ballDx * ballDx) + (ballDy * ballDy));
 	}
 	
 	private int getScoreToAdd() {
@@ -180,6 +193,7 @@ public class ArkaDroidGameThread extends Thread {
 				sp.unkill();
 			}
 		}
+		paddleCollisions = 0;
 		spritePaddle.resetTrails();
 		spriteBall.resetTrails();
 		ballDx = 1;
@@ -189,7 +203,7 @@ public class ArkaDroidGameThread extends Thread {
 
 	private void updateGame() {
 		
-		double timediff = (System.currentTimeMillis() - (double)lastupdate) / PHYSICS_SPEED;
+		timediff = (System.currentTimeMillis() - (double)lastupdate) / PHYSICS_SPEED;
 		lastupdate = System.currentTimeMillis();
 		
 		if (spriteBall.collidesWith(spritePaddle)) {
@@ -206,7 +220,7 @@ public class ArkaDroidGameThread extends Thread {
 				double maxSpin = spritePaddle.getW() / 2;
 				double spin = diff / maxSpin;
 				// get the original ball speed
-				double speed = Math.sqrt((ballDx * ballDx) + (ballDy * ballDy));
+				double speed = getBallSpeed();
 				double shootAngle = 90 - (90 * spin);
 				double new_ballDy = Math.sin(Math.toRadians(shootAngle)) * speed;
 				double new_ballDx = 0 - Math.cos(Math.toRadians(shootAngle)) * speed;
@@ -221,6 +235,7 @@ public class ArkaDroidGameThread extends Thread {
 			else ballDx += ballDiff;
 			if (ballDy < 0) ballDy -= ballDiff;
 			else ballDy += ballDiff;
+			paddleCollisions++;
 		}
 		
 		boolean allDead = true;
