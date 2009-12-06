@@ -20,7 +20,8 @@ public class Sprite {
 	private ArkaDroidGameThread parent;
 	Rect rect = new Rect();
 	private boolean killed = false;
-	double[] trailX, trailY;
+	private final int TRAILLENGTH = 5;
+	int[] trailX, trailY;
 	private long lastTrailSave;
 	
 	public Sprite(Drawable drawable, ArkaDroidGameThread parent, int brickColour) {
@@ -36,17 +37,17 @@ public class Sprite {
 		}
 		else {
 			// this probably isn't a brick... let's display movement trails.
-			trailX = new double[5];
-			trailY = new double[5];
+			trailX = new int[TRAILLENGTH];
+			trailY = new int[TRAILLENGTH];
 		}
 	}
 	
 	public void resetTrails() {
 		Log.d("resetTrails()", "reset trails");
 		if (trailX != null && trailY != null) {
-			for (int i=0; i<trailX.length; i++) {
-				trailX[i] = x;
-				trailY[i] = y;
+			for (int i=0; i<TRAILLENGTH; i++) {
+				trailX[i] = (int)x;
+				trailY[i] = (int)y;
 			}
 		}
 	}
@@ -54,12 +55,12 @@ public class Sprite {
 	public void updateTrails() {
 		if (trailX != null && trailY != null) {
 			if (System.currentTimeMillis() - lastTrailSave > trailSaveInterval) {
-				for (int i=trailX.length-1; i>0; i--) {
+				for (int i=TRAILLENGTH-1; i>0; i--) {
 					trailX[i] = trailX[i-1];
 					trailY[i] = trailY[i-1];
 				}
-				trailX[0] = x;
-				trailY[0] = y;
+				trailX[0] = (int)x;
+				trailY[0] = (int)y;
 				lastTrailSave = System.currentTimeMillis();
 			}
 		}
@@ -85,13 +86,13 @@ public class Sprite {
 		if (this.killed) return;
 		if (this.trailX != null && this.trailY != null) {
 			Log.v("Sprite.draw()", "starting trails");
-			for (int i=trailX.length-1; i>=0; i--) { 
-				Rect rect = new Rect((int)trailX[i], (int)trailY[i], (int)(trailX[i] + w), (int)(trailY[i] + h));
-				this.drawable.setBounds(rect);
-				int alpha = (int)(255d * (trailX.length - (i+1)) / trailX.length);
+			
+			for (int i=TRAILLENGTH-1; i>=0; i--) { 
+				this.drawable.setBounds(trailX[i], trailY[i], (trailX[i] + (int)w), (trailY[i] + (int)h));
+				int alpha = (int)(255d * (TRAILLENGTH - (i+1)) / TRAILLENGTH);
 				this.drawable.setAlpha(alpha);
 				this.drawable.draw(canv);
-				Log.v("Sprite.draw()", "drawing trail. alpha: " + alpha + ", bounds: " + rect);
+				Log.v("Sprite.draw()", "drawing trail. alpha: " + alpha + ", bounds: " + trailX[i] +","+ trailY[i]+","+ (trailX[i] + (int)w)+","+ (trailY[i] + (int)h));
 			}
 		}
 		this.drawable.setBounds((int)x, (int)y, (int)(x+w), (int)(y+h));
