@@ -281,7 +281,7 @@ public class ArkaDroidGameThread extends Thread {
 		}
 
 		spriteBall.setX(spriteBall.getX() + ballDxForTime);
-		spriteBall.setY(spriteBall.getY() + (ballDy*timediff));
+		spriteBall.setY(spriteBall.getY() + ballDyForTime);
 		// Log.d("ArkaDroidGameThread.updateGame()", "paddleDirection: " + paddleDirection + ", paddleDx_mag: " + paddleDx_mag);
 		
 		if(moving==Moving.LEFT){
