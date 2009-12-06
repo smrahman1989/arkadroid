@@ -1,1 +1,5 @@
-This page will have screenshots on it.
+Here is a screenshot of ArkaDroid running in the Android SDK:
+
+http://arkadroid.googlecode.com/svn/wiki/images/screenshot.png
+
+Not bad huh?
