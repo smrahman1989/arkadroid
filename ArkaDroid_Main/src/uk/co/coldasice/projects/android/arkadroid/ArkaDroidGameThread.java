@@ -52,19 +52,26 @@ public class ArkaDroidGameThread extends Thread {
 	private boolean resetSafe;
 	
 	private long lastupdate;
+	private long nextRender;
 	private final double PHYSICS_SPEED = 13.0;
 	private final double PADDLE_SPEED = 4.0;
+	private final int RENDER_EVERY_MS = 40;
+	private final int SLEEP_FOR_MS = 10;
 	
 	private int bricksKilledInARow = 0;
 	private int currentScore = 0;
 	
 	private final Random random = new Random();
+	
+	private Paint paint = new Paint();
 
 	private int paddleCollisions = 0;
 
 	private static final DecimalFormat df = new DecimalFormat("0.000");
 
 	private double timediff;
+	
+	private boolean lastHitPaddle = false;
 	
 	
 	public ArkaDroidGameThread(SurfaceHolder holder, Context context) {
@@ -74,6 +81,10 @@ public class ArkaDroidGameThread extends Thread {
 		this.w = disp.widthPixels;
 		this.h = disp.heightPixels;
 		setupImages();
+		paint.setStyle(Paint.Style.FILL);
+		paint.setAntiAlias(true);
+		paint.setStrokeWidth(1);
+		paint.setColor(Color.WHITE);
 	}
 	
 	private void setupImages() {
@@ -107,21 +118,23 @@ public class ArkaDroidGameThread extends Thread {
 		while (mRun) {
 			canv = null;
 			try {
-				canv = this.holder.lockCanvas();
+				if (lastupdate > nextRender) canv = this.holder.lockCanvas();
 				synchronized (holder) {
 					if (state == State.running) {
 						resetSafe = true;
 						updateGame();
 					}
 					else if (state == State.paused) reset();
-					render(canv);
+					if (canv != null){
+						render(canv);
+						nextRender = lastupdate + RENDER_EVERY_MS;
+					}
 				}
 			}
 			finally {
 				if (canv != null) holder.unlockCanvasAndPost(canv);
 			}
-			//try { Thread.sleep(10); } catch (InterruptedException e) {	}
-			Thread.yield();
+			try { Thread.sleep(SLEEP_FOR_MS); } catch (InterruptedException e) {	}
 		}
 	}
 
@@ -131,11 +144,6 @@ public class ArkaDroidGameThread extends Thread {
 		spriteBall.draw(canv);
 		spritePaddle.draw(canv);
 		
-		Paint paint = new Paint();
-		paint.setStyle(Paint.Style.FILL);
-		paint.setAntiAlias(true);
-		paint.setStrokeWidth(1);
-		paint.setColor(Color.WHITE);
 		if (state == State.paused) {
 			paint.setTextSize(25);
 			canv.drawText("Press any key to start", 40, h/2, paint);
@@ -199,14 +207,15 @@ public class ArkaDroidGameThread extends Thread {
 		ballDx = 1;
 		ballDy = 1;
 		lastupdate = System.currentTimeMillis();
+		lastHitPaddle = false;
 	}
 
 	private void updateGame() {
+		long now = System.currentTimeMillis();
+		timediff = (now - lastupdate) / PHYSICS_SPEED;
+		lastupdate = now;
 		
-		timediff = (System.currentTimeMillis() - (double)lastupdate) / PHYSICS_SPEED;
-		lastupdate = System.currentTimeMillis();
-		
-		if (spriteBall.collidesWith(spritePaddle)) {
+		if (!lastHitPaddle && spriteBall.collidesWith(spritePaddle)) {
 			double ballMidx = spriteBall.getMidX();
 			double paddleMidx = spritePaddle.getMidX();
 			
@@ -230,12 +239,12 @@ public class ArkaDroidGameThread extends Thread {
 				ballDy = new_ballDy;
 			}
 			// speed up the ball a bit
-			double ballDiff = (0.2 * timediff);
-			if (ballDx < 0) ballDx -= ballDiff;
-			else ballDx += ballDiff;
-			if (ballDy < 0) ballDy -= ballDiff;
-			else ballDy += ballDiff;
+			if (ballDx < 0) ballDx -= 0.2;
+			else ballDx += 0.2;
+			if (ballDy < 0) ballDy -= 0.2;
+			else ballDy += 0.2;
 			paddleCollisions++;
+			lastHitPaddle=true;
 		}
 		
 		boolean allDead = true;
@@ -249,6 +258,7 @@ public class ArkaDroidGameThread extends Thread {
 				brick.kill();
 				// add one to the current run (how many bricks killed in a row)
 				bricksKilledInARow++;
+				lastHitPaddle = false;
 				break;
 			}
 		}
@@ -258,16 +268,19 @@ public class ArkaDroidGameThread extends Thread {
 			pause();
 		}
 		
-		if (ballDx > 0 && (spriteBall.getX() + spriteBall.getW() + ballDx >= w)) ballDx *= -1;
-		else if (ballDx < 0 && (spriteBall.getX() + ballDx <= 0)) ballDx *= -1;
+		double ballDxForTime = ballDx*timediff;
+		double ballDyForTime = ballDy*timediff;
 		
-		if (ballDy < 0 && (spriteBall.getY() + ballDy <= 0)) ballDy *= -1;
+		if (ballDxForTime > 0 && (spriteBall.getX() + spriteBall.getW() + ballDxForTime >= w)){ ballDx *= -1; lastHitPaddle = false; }
+		else if (ballDxForTime < 0 && (spriteBall.getX() + ballDxForTime <= 0)){ ballDx *= -1; lastHitPaddle = false;}
+		
+		if (ballDyForTime < 0 && (spriteBall.getY() + ballDyForTime <= 0)){ ballDy *= -1; lastHitPaddle = false;}
 		// ball died?
-		if (ballDy > 0 && (spriteBall.getY() + spriteBall.getH() > spritePaddle.getY() + 2)) {
+		if (ballDyForTime > 0 && (spriteBall.getY() + spriteBall.getH() > spritePaddle.getY() + 2)) {
 			pause();
 		}
 
-		spriteBall.setX(spriteBall.getX() + (ballDx*timediff));
+		spriteBall.setX(spriteBall.getX() + ballDxForTime);
 		spriteBall.setY(spriteBall.getY() + (ballDy*timediff));
 		// Log.d("ArkaDroidGameThread.updateGame()", "paddleDirection: " + paddleDirection + ", paddleDx_mag: " + paddleDx_mag);
 		
