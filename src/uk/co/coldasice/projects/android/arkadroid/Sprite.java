@@ -3,26 +3,32 @@ package uk.co.coldasice.projects.android.arkadroid;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
 
 public class Sprite {
 
 	private double h;
 	private double w;
 	private Drawable drawable;
+	private ShapeDrawable colour;
 	private double y;
 	private double x;
 	private ArkaDroidGameThread parent;
 	Rect rect = new Rect();
 	private boolean killed = false;
 
-	public Sprite(Drawable drawable, ArkaDroidGameThread parent) {
+	public Sprite(Drawable drawable, ArkaDroidGameThread parent, int brickColour) {
 		this.drawable = drawable;
 		this.w = drawable.getIntrinsicWidth();
 		this.h = drawable.getIntrinsicHeight();
 		this.x = 0;
 		this.y = 0;
 		this.parent = parent;
+		if(brickColour!=-1){
+			colour = new ShapeDrawable(new RectShape());
+			colour.getPaint().setColor(0x66000000+brickColour);
+		}
 	}
 	
 	public double getW() {
@@ -30,7 +36,7 @@ public class Sprite {
 	}
 
 	public double getH() {
-		return w;
+		return h;
 	}
 	
 	public double getX() {
@@ -45,6 +51,10 @@ public class Sprite {
 		if (this.killed) return;
 		this.drawable.setBounds((int)x, (int)y, (int)(x+w), (int)(y+h));
 		this.drawable.draw(canv);
+		if(colour!=null){
+			this.colour.setBounds((int)x+3, (int)y+2, (int)(x+w)-3, (int)(y+h)-3);
+			this.colour.draw(canv);
+		}
 	}
 	
 	public void setX(double x) {
