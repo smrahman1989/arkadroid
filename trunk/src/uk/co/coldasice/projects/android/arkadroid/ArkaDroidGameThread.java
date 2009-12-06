@@ -1,6 +1,7 @@
 package uk.co.coldasice.projects.android.arkadroid;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import uk.co.coldasice.projects.android.ArkaDroid.R;
 
@@ -56,6 +57,8 @@ public class ArkaDroidGameThread extends Thread {
 	private final double PHYSICS_SPEED = 13.0;
 	private final double PADDLE_SPEED = 4.0;
 	
+	private final Random random = new Random();
+	
 	public ArkaDroidGameThread(SurfaceHolder holder, Context context) {
 		this.holder = holder;
 		this.context = context;
@@ -67,21 +70,22 @@ public class ArkaDroidGameThread extends Thread {
 	
 	private void setupImages() {
 		Resources r = this.context.getResources();
-		spriteBall = new Sprite(r.getDrawable(R.drawable.ball), this);
-		spritePaddle = new Sprite(r.getDrawable(R.drawable.paddle), this);
+		spriteBall = new Sprite(r.getDrawable(R.drawable.ball), this, -1);
+		spritePaddle = new Sprite(r.getDrawable(R.drawable.paddle), this, -1);
 		spritePaddle.setXMiddle(w/2);
 		spriteBall.setXYMiddle(w/2, 150);
 		imgBackground = BitmapFactory.decodeResource(r, R.drawable.texture);
 		bricks = new ArrayList<Sprite>();
 		Drawable brickImg = r.getDrawable(R.drawable.brick);
-		int howManyBricks = w / brickImg.getIntrinsicWidth();
+		int paddingTop = 40;
+		int paddingSides = 60;
+		int howManyBricks = (w-paddingSides) / brickImg.getIntrinsicWidth();
 		int brickOffsetX = (w - (howManyBricks * brickImg.getIntrinsicWidth())) / 2;
-		int brickOffsetY = 25;
-		for (int j=0; j<3; j++) {
+		for (int j=0; j<5; j++) {
 			for (int i=0; i < howManyBricks; i++) {
-				Sprite brick = new Sprite(brickImg, this);
+				Sprite brick = new Sprite(brickImg, this, random.nextInt(0x00FFFFFF));
 				brick.setX(i * brick.getW() + brickOffsetX);
-				brick.setY(j * brick.getH() + brickOffsetY);
+				brick.setY((j * brick.getH()) + paddingTop);
 				bricks.add(brick);
 			}
 		} 
@@ -108,6 +112,7 @@ public class ArkaDroidGameThread extends Thread {
 			finally {
 				if (canv != null) holder.unlockCanvasAndPost(canv);
 			}
+			//try { Thread.sleep(10); } catch (InterruptedException e) {	}
 		}
 	}
 
@@ -159,7 +164,7 @@ public class ArkaDroidGameThread extends Thread {
 
 	private void updateGame() {
 		
-		double timediff = (System.currentTimeMillis() - lastupdate) / PHYSICS_SPEED;
+		double timediff = (System.currentTimeMillis() - (double)lastupdate) / PHYSICS_SPEED;
 		lastupdate = System.currentTimeMillis();
 		
 		if (spriteBall.collidesWith(spritePaddle)) {
@@ -221,15 +226,15 @@ public class ArkaDroidGameThread extends Thread {
 			pause();
 		}
 
-		spriteBall.setX(spriteBall.getX() + ballDx*timediff);
-		spriteBall.setY(spriteBall.getY() + ballDy*timediff);
+		spriteBall.setX(spriteBall.getX() + (ballDx*timediff));
+		spriteBall.setY(spriteBall.getY() + (ballDy*timediff));
 		// Log.d("ArkaDroidGameThread.updateGame()", "paddleDirection: " + paddleDirection + ", paddleDx_mag: " + paddleDx_mag);
 		
 		if(moving==Moving.LEFT){
-			spritePaddle.setX(spritePaddle.getX() - paddleDx_mag*timediff);
+			spritePaddle.setX(spritePaddle.getX() - (paddleDx_mag*timediff));
 			//paddleDx_mag = Math.max(0, paddleDx_mag - 1);
 		}else if(moving==Moving.RIGHT){
-			spritePaddle.setX(spritePaddle.getX() + paddleDx_mag*timediff);
+			spritePaddle.setX(spritePaddle.getX() + (paddleDx_mag*timediff));
 			//paddleDx_mag = Math.min(0, paddleDx_mag + 1);
 		}
 	}
