@@ -114,6 +114,7 @@ public class ArkaDroidGameThread extends Thread {
 				if (canv != null) holder.unlockCanvasAndPost(canv);
 			}
 			//try { Thread.sleep(10); } catch (InterruptedException e) {	}
+			Thread.yield();
 		}
 	}
 
@@ -179,6 +180,8 @@ public class ArkaDroidGameThread extends Thread {
 				sp.unkill();
 			}
 		}
+		spritePaddle.resetTrails();
+		spriteBall.resetTrails();
 		ballDx = 1;
 		ballDy = 1;
 		lastupdate = System.currentTimeMillis();
@@ -211,8 +214,6 @@ public class ArkaDroidGameThread extends Thread {
 				ballDx = new_ballDx;
 				if (new_ballDy > 0) new_ballDy = -new_ballDy;
 				ballDy = new_ballDy;
-				// bump up 1 pix to stop recollision
-				spriteBall.setY(spriteBall.getY() - 1);
 			}
 			// speed up the ball a bit
 			double ballDiff = (0.2 * timediff);
@@ -262,6 +263,9 @@ public class ArkaDroidGameThread extends Thread {
 			spritePaddle.setX(spritePaddle.getX() + (paddleDx_mag*timediff));
 			//paddleDx_mag = Math.min(0, paddleDx_mag + 1);
 		}
+		
+		spriteBall.updateTrails();
+		spritePaddle.updateTrails();
 	}
 
 	public void pause() {
