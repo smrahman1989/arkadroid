@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import uk.co.coldasice.projects.android.ArkaDroid.R;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -13,9 +12,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
-import android.hardware.SensorManager;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -57,7 +54,11 @@ public class ArkaDroidGameThread extends Thread {
 	private final double PHYSICS_SPEED = 13.0;
 	private final double PADDLE_SPEED = 4.0;
 	
+	private int bricksKilledInARow = 0;
+	private int currentScore = 0;
+	
 	private final Random random = new Random();
+
 	
 	public ArkaDroidGameThread(SurfaceHolder holder, Context context) {
 		this.holder = holder;
@@ -125,16 +126,36 @@ public class ArkaDroidGameThread extends Thread {
 		Paint paint = new Paint();
 		paint.setStyle(Paint.Style.FILL);
 		paint.setAntiAlias(true);
-		paint.setTextSize(20);
 		paint.setStrokeWidth(1);
 		paint.setColor(Color.WHITE);
-		canv.drawText(infoText, 10, 20, paint);
+		if (state == State.paused) {
+			paint.setTextSize(25);
+			canv.drawText("Press any key to start", 40, h/2, paint);
+		}
+		else {
+			paint.setTextSize(12);
+			canv.drawText("Score: " + (currentScore + getScoreToAdd()), 10, 28, paint);
+			canv.drawText(infoText, 10, 14, paint);
+		}
+		
+	}
+	
+	private int getScoreToAdd() {
+		int scoreToAdd = 0;
+		for (int i=0; i<bricksKilledInARow; i++) {
+			scoreToAdd += i+1;
+		}
+		return scoreToAdd;
 	}
 
 	private void reset() {
 		if (!resetSafe) return;
 		boolean fullReset = false;
-		if (state != State.paused) livesLeft--;
+		if (state != State.paused) {
+			currentScore += getScoreToAdd();
+			bricksKilledInARow = 0;
+			livesLeft--;
+		}
 		if (livesLeft <= 0) {
 			fullReset = true;
 			infoText = "You died";
@@ -153,6 +174,7 @@ public class ArkaDroidGameThread extends Thread {
 		spritePaddle.setXMiddle(w/2);
 		spriteBall.setXYMiddle(w/2, 150);
 		if (fullReset) {
+			currentScore = 0;
 			for (Sprite sp: bricks) {
 				sp.unkill();
 			}
@@ -206,9 +228,11 @@ public class ArkaDroidGameThread extends Thread {
 			allDead = false;
 			if (brick.collidesWith(spriteBall)) {
 				// don't change the format of this; it's used in the j2se experiments bit
-				 Log.d("updateGame() - deadbrick", "ballPos: " + spriteBall.getBounds() + ", brickPos: " + brick.getBounds() + ", ballDirection: " + ballDx + ", " + ballDy);
+				// Log.d("updateGame() - deadbrick", "ballPos: " + spriteBall.getBounds() + ", brickPos: " + brick.getBounds() + ", ballDirection: " + ballDx + ", " + ballDy);
 				ballDy *= -1;
 				brick.kill();
+				// add one to the current run (how many bricks killed in a row)
+				bricksKilledInARow++;
 				break;
 			}
 		}
@@ -255,6 +279,7 @@ public class ArkaDroidGameThread extends Thread {
 	
 	public void gameGo() {
 		state = State.running;
+		resetSafe = true;
 		reset();
 	}
 
@@ -287,6 +312,9 @@ public class ArkaDroidGameThread extends Thread {
 	}
 	
 	boolean keyUp(int keyCode, KeyEvent msg) {
+		if (state == State.paused) {
+			gameGo();
+		}
 		if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT
 				|| keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
 			MovePaddle(Moving.NO, 0);
