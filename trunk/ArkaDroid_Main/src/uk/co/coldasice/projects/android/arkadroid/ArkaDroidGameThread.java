@@ -205,8 +205,8 @@ public class ArkaDroidGameThread extends Thread {
 			if (brick.dead()) continue;
 			allDead = false;
 			if (brick.collidesWith(spriteBall)) {
-				// don't change the format of this; it's used to generate a test thing
-				// Log.d("updateGame() - deadbrick", "ballPos: " + spriteBall.getBounds() + ", brickPos: " + brick.getBounds() + ", ballDirection: " + ballDx + ", " + ballDy);
+				// don't change the format of this; it's used in the j2se experiments bit
+				 Log.d("updateGame() - deadbrick", "ballPos: " + spriteBall.getBounds() + ", brickPos: " + brick.getBounds() + ", ballDirection: " + ballDx + ", " + ballDy);
 				ballDy *= -1;
 				brick.kill();
 				break;
