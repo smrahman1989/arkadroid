@@ -41,8 +41,9 @@ public class GameState {
 		this.renderer = renderer;
 		ball = new SpriteBall(r.getDrawable(R.drawable.ball), renderer);
 		paddle = new SpritePaddle(r.getDrawable(R.drawable.paddle), renderer);
+		paddle.setYEdge(renderer.getH()-5);
 		paddle.setXMiddle(renderer.getW()/2);
-		ball.setXYMiddle(renderer.getW()/2, 150);
+		ball.setXMiddle(renderer.getW()/2);
 		bricks = new ArrayList<SpriteBrick>();
 		Drawable brickImg = r.getDrawable(R.drawable.brick);
 		int paddingTop = 40;

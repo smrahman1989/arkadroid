@@ -8,7 +8,7 @@ import android.util.Log;
 public class SpriteBall extends Sprite {
 	/** how many milliseconds between trail paints */ 
 	private static final long trailSaveInterval = 50;
-	private static final int INITIAL_DXY = 3;
+	private static final int INITIAL_DXY = 1;
 
 	private final int TRAILLENGTH = 5;
 	int[] trailX, trailY;

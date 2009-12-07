@@ -2,8 +2,6 @@ package uk.co.coldasice.projects.android.arkadroid;
 
 import java.util.List;
 
-import uk.co.coldasice.projects.android.arkadroid.ArkaDroidGameThread.Moving;
-
 import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
@@ -73,15 +71,18 @@ public class TiltListener implements SensorEventListener{
 			double absvalue = Math.abs(event.values[2]);
 			if (absvalue > DEADSPOT) {
 				if (event.values[2] > 0){
-					gameThread.MovePaddle(Moving.LEFT, (absvalue-DEADSPOT)/TILTSPEED);
+					if (tilt==Tilt.RIGHT) gameThread.changedRight(0, false);
+					gameThread.changedLeft((absvalue-DEADSPOT)/TILTSPEED, true);
 					tilt = Tilt.LEFT;
 				}
 				else{
-					gameThread.MovePaddle(Moving.RIGHT, (absvalue-DEADSPOT)/TILTSPEED);
+					if (tilt==Tilt.LEFT) gameThread.changedLeft(0, false);
+					gameThread.changedRight((absvalue-DEADSPOT)/TILTSPEED, true);
 					tilt = Tilt.RIGHT;
 				}
 			} else {
-				if (tilt!=Tilt.NONE) gameThread.MovePaddle(Moving.NO, 0.0);
+				if (tilt==Tilt.LEFT) gameThread.changedLeft(0, false);
+				if (tilt==Tilt.RIGHT) gameThread.changedRight(0, false);
 				tilt = Tilt.NONE;
 			}
 		}

@@ -12,10 +12,6 @@ import android.view.SurfaceHolder;
 
 public class ArkaDroidGameThread extends Thread {
 
-	public enum Moving {
-		NO, LEFT, RIGHT
-	}
-
 	private boolean mRun = true;
 	private SurfaceHolder holder;
 
@@ -115,31 +111,44 @@ public class ArkaDroidGameThread extends Thread {
 		}
 	}
 	
-	public void MovePaddle(Moving moving, double speed) {
+	public void changedLeft(double speed, boolean pressed) {
 		synchronized (holder) {
-			this.gameState.paddle.movePaddle(moving, speed);
+			this.gameState.paddle.setSpeed(speed);
+			this.gameState.paddle.setLeftPressed(pressed);
+		}
+	}
+	
+	public void changedRight(double speed, boolean pressed) {
+		synchronized (holder) {
+			this.gameState.paddle.setSpeed(speed);
+			this.gameState.paddle.setRightPressed(pressed);
 		}
 	}
 	
 	boolean keyUp(int keyCode, KeyEvent msg) {
+		boolean handled = false;
 		if (gameState.isPaused()) {
 			gameGo();
+			handled = true;
 		}
-		if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT
-				|| keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-			MovePaddle(Moving.NO, 0);
-			return true;
+		if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT){
+			changedLeft(PADDLE_SPEED,false);
+			handled = true;
 		}
-		return false;
+		else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT){
+			changedRight(PADDLE_SPEED,false);
+			handled = true;
+		}
+		return handled;
 	}
 
 	public boolean keyDown(int keyCode, KeyEvent msg) {
 		if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-			MovePaddle(Moving.LEFT, PADDLE_SPEED);
+			changedLeft(PADDLE_SPEED,true);
 			return true;
 		}
 		else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-			MovePaddle(Moving.RIGHT, PADDLE_SPEED);
+			changedRight(PADDLE_SPEED,true);
 			return true;
 		}
 		
@@ -148,15 +157,25 @@ public class ArkaDroidGameThread extends Thread {
 
 	public boolean onTouchEvent(MotionEvent event) {
 		int action = event.getAction();
-		int where = (int)event.getX();
+		int width = getW();
 		switch (action) {
 			case MotionEvent.ACTION_DOWN: {
-				if (where < getW()/3) MovePaddle(Moving.LEFT, PADDLE_SPEED);
-				else if (where > (getW() - getW()/3)) MovePaddle(Moving.RIGHT, PADDLE_SPEED);
+				int where = (int)event.getX();
+				if (where < width/3) changedLeft(PADDLE_SPEED,true);
+				else if (where > (width - width/3)) changedRight(PADDLE_SPEED,true);
 				return true;
 			}
 			case MotionEvent.ACTION_UP: {
-				MovePaddle(Moving.NO, 0);
+				changedLeft(PADDLE_SPEED,false);
+				changedRight(PADDLE_SPEED,false);
+				return true;
+			}
+			case MotionEvent.ACTION_MOVE: {
+				changedLeft(PADDLE_SPEED,false);
+				changedRight(PADDLE_SPEED,false);
+				int where = (int)event.getX();
+				if (where < width/3) changedLeft(PADDLE_SPEED,true);
+				else if (where > (width - width/3)) changedRight(PADDLE_SPEED,true);
 				return true;
 			}
 		}

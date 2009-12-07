@@ -54,14 +54,16 @@ public abstract class Sprite {
 	protected abstract void postDraw(Canvas canv);
 	
 	public void setX(double x) {
+		int width = this.renderer.getW();
 		if (x < 0) this.x = 0;
-		else if (x + w > renderer.getW()) this.setXEdge(this.renderer.getW()-1);
+		else if (x + w > width) this.setXEdge(width-1);
 		else this.x = x;
 	}
 	
 	public void setY (double y) {
+		int height = this.renderer.getH();
 		if (y < 0) this.y = 0;
-		else if (y + h > this.renderer.getH()) this.setYEdge(this.renderer.getH()-1);
+		else if (y + h > height) this.setYEdge(height-1);
 		else this.y = y;
 	}
 
