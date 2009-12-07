@@ -95,8 +95,6 @@ public class GameLoop {
 		// Log.d("ArkaDroidGameThread.updateGame()", "paddleDirection: " + paddleDirection + ", paddleDx_mag: " + paddleDx_mag);
 		
 		gameState.paddle.update(timediff);
-		
-		gameState.ball.updateTrails();
 	}
 
 }

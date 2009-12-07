@@ -24,7 +24,7 @@ public class GameState {
 
 	private int livesLeft = MAX_LIVES + 1;
 	// sprites
-	SpriteBall ball;
+	public SpriteBall ball;
 	public SpritePaddle paddle;
 	ArrayList<SpriteBrick> bricks;
 	
