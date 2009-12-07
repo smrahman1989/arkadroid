@@ -54,9 +54,12 @@ public class GameRenderer {
 		else {
 			paint.setTextSize(12);
 			canv.drawText(gameState.infoText, 10, 14, paint);
-			canv.drawText("Speed: " + df.format(gameState.ball.speed()), 120, 14, paint);
+			canv.drawText("Speed: " + df.format(gameState.ball.speed()), 80, 14, paint);
 			canv.drawText("Score: " + (gameState.currentScore + gameState.getScoreToAdd()), 10, 28, paint);
-			canv.drawText("Timediff: " + df.format(gameLoop.timediff), 120, 28, paint);
+			canv.drawText("Timediff: " + df.format(gameLoop.timediff), 80, 28, paint);
+			canv.drawText("Paddle: " + df.format(gameState.paddle.paddleDx_mag) 
+					+ " L:"+gameState.paddle.leftPressed
+					+ " R:"+gameState.paddle.rightPressed, 160, 14, paint);
 		}
 		
 	}

@@ -1,22 +1,29 @@
 package uk.co.coldasice.projects.android.arkadroid.sprites;
 
-import uk.co.coldasice.projects.android.arkadroid.ArkaDroidGameThread.Moving;
 import uk.co.coldasice.projects.android.arkadroid.controllers.GameRenderer;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 
 public class SpritePaddle extends Sprite {
 	
-	private double paddleDx_mag = 0;
-	private Moving moving = Moving.NO;
+	public double paddleDx_mag = 0;
+	public boolean rightPressed = false;
+	public boolean leftPressed = false;
 	
 	public SpritePaddle(Drawable drawable, GameRenderer renderer) {
 		super(drawable, renderer);
 	}
 	
-	public void movePaddle(Moving moving, double speed) {
-		this.moving = moving;
+	public void setSpeed(double speed) {
 		paddleDx_mag = speed;
+	}
+	
+	public void setRightPressed(boolean pressed) {
+		rightPressed = pressed;
+	}
+	
+	public void setLeftPressed(boolean pressed) {
+		leftPressed = pressed;
 	}
 
 	@Override
@@ -26,12 +33,10 @@ public class SpritePaddle extends Sprite {
 	protected void preDraw(Canvas canv) { }
 
 	public void update(double timediff) {
-		if(moving==Moving.LEFT){
+		if(leftPressed && !rightPressed){
 			setX(x - (paddleDx_mag*timediff));
-			//paddleDx_mag = Math.max(0, paddleDx_mag - 1);
-		}else if(moving==Moving.RIGHT){
+		}else if(rightPressed && !leftPressed){
 			setX(x + (paddleDx_mag*timediff));
-			//paddleDx_mag = Math.min(0, paddleDx_mag + 1);
 		}		
 	}
 }
