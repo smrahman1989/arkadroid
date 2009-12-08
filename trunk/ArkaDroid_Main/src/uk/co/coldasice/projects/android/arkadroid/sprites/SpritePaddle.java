@@ -1,10 +1,9 @@
 package uk.co.coldasice.projects.android.arkadroid.sprites;
 
 import uk.co.coldasice.projects.android.arkadroid.controllers.GameRenderer;
-import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 
-public class SpritePaddle extends Sprite {
+public class SpritePaddle extends Sprite_Trail {
 	
 	private static final int LASTPRESSED_LEFT = -1;
 	private static final int LASTPRESSED_RIGHT = 1;
@@ -35,12 +34,6 @@ public class SpritePaddle extends Sprite {
 		leftPressed = pressed;
 	}
 
-	@Override
-	protected void postDraw(Canvas canv) { }
-
-	@Override
-	protected void preDraw(Canvas canv) { }
-
 	public void update(double timediff) {
 		// accelerate the ball towards desired speed, if just one direction is pressed
 		if (leftPressed ^ rightPressed && desiredSpeed > currentSpeed) {
@@ -69,6 +62,7 @@ public class SpritePaddle extends Sprite {
 	}
 	
 	public void reset() {
+		super.reset();
 		lastPressed = LASTPRESSED_NONE;
 	}
 
