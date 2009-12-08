@@ -1,6 +1,5 @@
 package uk.co.coldasice.projects.android.arkadroid;
 
-import uk.co.coldasice.projects.android.ArkaDroid.R;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;

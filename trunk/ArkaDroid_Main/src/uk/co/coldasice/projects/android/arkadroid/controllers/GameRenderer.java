@@ -2,7 +2,7 @@ package uk.co.coldasice.projects.android.arkadroid.controllers;
 
 import java.text.DecimalFormat;
 
-import uk.co.coldasice.projects.android.ArkaDroid.R;
+import uk.co.coldasice.projects.android.arkadroid.R;
 import uk.co.coldasice.projects.android.arkadroid.sprites.Sprite;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
