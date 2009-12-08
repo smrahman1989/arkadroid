@@ -3,7 +3,7 @@ package uk.co.coldasice.projects.android.arkadroid.controllers;
 import java.util.ArrayList;
 import java.util.Random;
 
-import uk.co.coldasice.projects.android.ArkaDroid.R;
+import uk.co.coldasice.projects.android.arkadroid.R;
 import uk.co.coldasice.projects.android.arkadroid.sprites.Sprite;
 import uk.co.coldasice.projects.android.arkadroid.sprites.SpriteBall;
 import uk.co.coldasice.projects.android.arkadroid.sprites.SpriteBrick;
