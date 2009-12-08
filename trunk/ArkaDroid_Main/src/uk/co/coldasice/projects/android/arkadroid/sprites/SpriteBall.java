@@ -3,10 +3,9 @@ package uk.co.coldasice.projects.android.arkadroid.sprites;
 import uk.co.coldasice.projects.android.arkadroid.controllers.GameRenderer;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 
 public class SpriteBall extends Sprite {
-	private static final int INITIAL_DXY = 1;
+	private static final double INITIAL_DXY = 1.5;
 
 	private final int TRAILLENGTH = 5;
 	private int latestTrail = 0;
@@ -45,7 +44,6 @@ public class SpriteBall extends Sprite {
 			int alpha = (int)(255d * (TRAILLENGTH - (j+1)) / TRAILLENGTH);
 			this.drawable.setAlpha(alpha);
 			this.drawable.draw(canv);
-			Log.v("Sprite.draw()", "drawing trail. alpha: " + alpha + ", bounds: " + trailX[i] +","+ trailY[i]+","+ (trailX[i] + (int)w)+","+ (trailY[i] + (int)h));
 		}
 	}
 

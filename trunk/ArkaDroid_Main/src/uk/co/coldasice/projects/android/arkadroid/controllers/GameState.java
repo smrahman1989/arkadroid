@@ -105,6 +105,7 @@ public class GameState {
 			else infoText = "Lives left: " + livesLeft;
 			
 		}
+		paddle.reset();
 		paddle.setYEdge(renderer.getH()-5);
 		paddle.setXMiddle(renderer.getW()/2);
 		ball.setXYMiddle(renderer.getW()/2, 150);
