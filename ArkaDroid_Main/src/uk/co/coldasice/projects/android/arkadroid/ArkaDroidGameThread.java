@@ -56,6 +56,7 @@ public class ArkaDroidGameThread extends Thread {
 					if (canv != null){
 						renderer.render(canv);
 						gameState.ball.updateTrails();
+						gameState.paddle.updateTrails();
 						nextRender = gameloop.lastupdate + RENDER_EVERY_MS;
 					}
 				}
