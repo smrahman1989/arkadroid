@@ -6,7 +6,7 @@ import android.graphics.drawable.Drawable;
 
 public abstract class Sprite_Trail extends Sprite {
 
-	private final int TRAILLENGTH = 8;
+	private final int TRAILLENGTH = 5;
 	private int latestTrail = 0;
 	int[] trailX, trailY;
 	
