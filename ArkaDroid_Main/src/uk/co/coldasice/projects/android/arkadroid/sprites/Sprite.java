@@ -8,41 +8,23 @@ import android.graphics.drawable.Drawable;
 public abstract class Sprite {
 
 	protected final Drawable drawable;
-	protected double y;
-	protected double x;
-	protected double w;
-	protected double h;
+	public double y;
+	public double x;
+	public double w;
+	public double h;
 	private GameRenderer renderer;
 	Rect rect = new Rect();
-	private boolean killed = false;
 	
-	public Sprite(Drawable drawable, GameRenderer renderer) {
+	public Sprite(Drawable drawable, GameRenderer renderer, double _x, double _y) {
 		this.drawable = drawable;
 		this.w = drawable.getIntrinsicWidth();
 		this.h = drawable.getIntrinsicHeight();
-		this.x = 0;
-		this.y = 0;
+		this.x = _x;
+		this.y = _y;
 		this.renderer = renderer;
 	}
 	
-	public double getW() {
-		return w;
-	}
-
-	public double getH() {
-		return h;
-	}
-	
-	public double getX() {
-		return x;
-	}
-	
-	public double getY() {
-		return y;
-	}
-	
 	public void draw (Canvas canv) {
-		if (this.killed) return;
 		preDraw(canv);
 		this.drawable.setBounds((int)x, (int)y, (int)(x+w), (int)(y+h));
 		this.drawable.setAlpha(255);
@@ -54,14 +36,14 @@ public abstract class Sprite {
 	protected abstract void postDraw(Canvas canv);
 	
 	public void setX(double x) {
-		int width = this.renderer.getW();
+		int width = this.renderer.w;
 		if (x < 0) this.x = 0;
 		else if (x + w > width) this.setXEdge(width-1);
 		else this.x = x;
 	}
 	
 	public void setY (double y) {
-		int height = this.renderer.getH();
+		int height = this.renderer.h;
 		if (y < 0) this.y = 0;
 		else if (y + h > height) this.setYEdge(height-1);
 		else this.y = y;
@@ -105,18 +87,6 @@ public abstract class Sprite {
 	Rect getBounds() {
 		rect.set((int)x, (int)y, (int)(x+w), (int)(y+h));
 		return rect;
-	}
-	
-	public void kill() {
-		killed = true;
-	}
-	
-	public void unkill() {
-		killed  = false;
-	}
-	
-	public boolean dead() {
-		return killed;
 	}
 
 	public double getMidX() {

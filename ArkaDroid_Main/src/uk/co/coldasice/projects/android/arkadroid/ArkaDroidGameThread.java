@@ -19,7 +19,7 @@ public class ArkaDroidGameThread extends Thread {
 
 	private long nextRender;
 	private final double PADDLE_SPEED = 4.0;
-	private final int RENDER_EVERY_MS = 40;
+	public final int RENDER_EVERY_MS = 30;
 	private final int SLEEP_FOR_MS = 10;
 
 	private GameRenderer renderer;
@@ -36,6 +36,7 @@ public class ArkaDroidGameThread extends Thread {
 		this.gameloop = new GameLoop(gameState);
 		this.renderer = new GameRenderer(gameState, gameloop, r);
 		gameState.init(r, renderer);
+		gameloop.init();
 	}
 
 	@Override
@@ -100,18 +101,6 @@ public class ArkaDroidGameThread extends Thread {
 			renderer.setSize(width, height);	
 		}
 	}
-
-	public int getW() {
-		synchronized (holder) {
-			return renderer.getW();
-		}
-	}
-	
-	public int getH() {
-		synchronized (holder) {
-			return renderer.getH();
-		}
-	}
 	
 	public void changedLeft(double speed, boolean pressed) {
 		synchronized (holder) {
@@ -124,6 +113,14 @@ public class ArkaDroidGameThread extends Thread {
 		synchronized (holder) {
 			this.gameState.paddle.setSpeed(speed);
 			this.gameState.paddle.setRightPressed(pressed);
+		}
+	}
+	
+	public void changedBoth(double speed, boolean pressedLeft, boolean pressedRight) {
+		synchronized (holder) {
+			this.gameState.paddle.setSpeed(speed);
+			this.gameState.paddle.setLeftPressed(pressedLeft);
+			this.gameState.paddle.setRightPressed(pressedRight);
 		}
 	}
 	
@@ -159,7 +156,7 @@ public class ArkaDroidGameThread extends Thread {
 
 	public boolean onTouchEvent(MotionEvent event) {
 		int action = event.getAction();
-		int width = getW();
+		int width = renderer.w;
 		switch (action) {
 			case MotionEvent.ACTION_DOWN: {
 				int where = (int)event.getX();
@@ -168,16 +165,16 @@ public class ArkaDroidGameThread extends Thread {
 				return true;
 			}
 			case MotionEvent.ACTION_UP: {
-				changedLeft(PADDLE_SPEED,false);
-				changedRight(PADDLE_SPEED,false);
+				changedBoth(PADDLE_SPEED, false, false);
 				return true;
 			}
 			case MotionEvent.ACTION_MOVE: {
-				changedLeft(PADDLE_SPEED,false);
-				changedRight(PADDLE_SPEED,false);
+				boolean left = false;
+				boolean right = false;
 				int where = (int)event.getX();
-				if (where < width/3) changedLeft(PADDLE_SPEED,true);
-				else if (where > (width - width/3)) changedRight(PADDLE_SPEED,true);
+				if (where < width/3) left = true;
+				else if (where > (width - width/3)) right = true;
+				changedBoth(PADDLE_SPEED, left, right);
 				return true;
 			}
 		}
