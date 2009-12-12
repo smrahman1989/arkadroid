@@ -6,6 +6,7 @@ import uk.co.coldasice.projects.android.arkadroid.sprites.SpriteBall;
 import uk.co.coldasice.projects.android.arkadroid.sprites.SpriteBrick;
 
 public class GameLoop {
+	double ballW,ballH,ballX,ballY;
 	private static final double PHYSICS_SPEED = 13.0;
 	
 	private GameState gameState;
@@ -14,8 +15,15 @@ public class GameLoop {
 	
 	private double dXRemaining,dYRemaining;
 	
+	Rect newBallBound = new Rect();
+	
 	public GameLoop(GameState state) {
 		this.gameState = state;
+	}
+	
+	public void init(){
+		ballW = gameState.ball.w;
+		ballH = gameState.ball.h;
 	}
 	
 	public void reset() {
@@ -35,20 +43,23 @@ public class GameLoop {
 		dYRemaining = gameState.ball.dy*timediff;
 		
 		do{
+			ballX = gameState.ball.x;
+			ballY = gameState.ball.y;
+			
 			//Loser ??
-			if (gameState.ball.getY() + gameState.ball.getH() >= gameState.paddle.getY() + gameState.paddle.getH()) {
+			if (ballY + ballH >= gameState.paddle.y + gameState.paddle.h) {
 				gameState.setPaused();
 				return;
 			}
 			
 			//New ball position after current dX and dY
-			double newX = gameState.ball.getX()+dXRemaining;
-			double newY = gameState.ball.getY()+dYRemaining;
-			Rect newBallBound = new Rect((int)newX, (int)newY, (int)(newX+gameState.ball.getW()), (int)(newY+gameState.ball.getH()));
-			
+			double newX = ballX+dXRemaining;
+			double newY = ballY+dYRemaining;
+			newBallBound.set((int)newX, (int)newY, (int)(newX+ballW), (int)(newY+ballH));
+		
 			//Default limits are the walls
-			double limitX = renderer.getW();
-			double limitY = renderer.getH();
+			double limitX = renderer.w;
+			double limitY = renderer.h;
 			if(dXRemaining < 0.0)limitX = 0.0;
 			if(dYRemaining < 0.0)limitY = 0.0;
 			
@@ -67,10 +78,10 @@ public class GameLoop {
 					gameState.bricksKilledInARow++;
 					
 					//Limit is the edge of the brick facing the ball
-					limitX = brick.getX();
-					if(dXRemaining < 0)limitX += brick.getW();
-					limitY = brick.getY();
-					if(dYRemaining < 0)limitY += brick.getH();
+					limitX = brick.x;
+					if(dXRemaining < 0)limitX += brick.w;
+					limitY = brick.y;
+					if(dYRemaining < 0)limitY += brick.h;
 					
 					break;
 				}
@@ -87,15 +98,15 @@ public class GameLoop {
 				if(gameState.paddle.collidesWith(newBallBound)){
 					paddleHit = true;
 					//Limit is the edge of the paddle facing the ball
-					limitX = gameState.paddle.getX();
-					if(dXRemaining < 0)limitX += gameState.paddle.getW();
-					limitY = gameState.paddle.getY();
-					if(dYRemaining < 0)limitY += gameState.paddle.getH();	
+					limitX = gameState.paddle.x;
+					if(dXRemaining < 0)limitX += gameState.paddle.w;
+					limitY = gameState.paddle.y;
+					if(dYRemaining < 0)limitY += gameState.paddle.h;	
 				}
 			}
 			//If moving left i.e. dX >= 0 check X limit
-			if(dXRemaining >= 0.0 && newX >= limitX-gameState.ball.getW()){
-				double canTravelX = (limitX-gameState.ball.getW())-gameState.ball.getX();
+			if(dXRemaining >= 0.0 && newX >= limitX-ballW){
+				double canTravelX = (limitX-ballW)-ballX;
 				double canTravelY = (canTravelX/dXRemaining)*dYRemaining;	
 				//Check max Y distance
 				double canTravelY2 = checkY(newY,limitY);
@@ -108,7 +119,7 @@ public class GameLoop {
 			}
 			//If moving right i.e. dX < 0 check X limit
 			if(dXRemaining < 0.0 && newX < limitX){
-				double canTravelX = limitX - gameState.ball.getX();
+				double canTravelX = limitX - ballX;
 				double canTravelY = (canTravelX/dXRemaining)*dYRemaining;
 				double canTravelY2 = checkY(newY,limitY);
 				//If implied Y distance is less than limit Y distance move the ball. otherwise fall through and let Y bounce first.
@@ -119,8 +130,8 @@ public class GameLoop {
 				}
 			}	
 			//If moving down i.e. dY >= 0 check Y limit
-			if(dYRemaining >= 0.0 && newY >= limitY-gameState.ball.getH()){
-				double canTravelY = limitY-gameState.ball.getH() - gameState.ball.getY();
+			if(dYRemaining >= 0.0 && newY >= limitY-ballH){
+				double canTravelY = limitY-ballH - ballY;
 				double canTravelX = (canTravelY/dYRemaining)*dXRemaining;
 				//Always move ball. Earlier checks would have continued in X limit crossed first.
 				moveBall(canTravelX,canTravelY);
@@ -133,7 +144,7 @@ public class GameLoop {
 			}
 			//If moving up i.e. dY < 0 check Y limit
 			if(dYRemaining < 0.0 && newY < limitY){
-				double canTravelY = limitY - gameState.ball.getY();
+				double canTravelY = limitY - ballY;
 				double canTravelX = (canTravelY/dYRemaining)*dXRemaining;
 				//Always move ball. Earlier checks would have continued in X limit crossed first.
 				moveBall(canTravelX,canTravelY);
@@ -152,18 +163,18 @@ public class GameLoop {
 	
 	private double checkY(double newY, double limitY){
 		double canTravelY2=dYRemaining;
-		if(dYRemaining >= 0.0 && newY >= limitY-gameState.ball.getH()){
-			canTravelY2 = limitY - gameState.ball.getH() - gameState.ball.getY();
+		if(dYRemaining >= 0.0 && newY >= limitY-ballH){
+			canTravelY2 = limitY - ballH - ballY;
 		}
 		if(dYRemaining < 0.0 && newY < limitY){
-			canTravelY2 = limitY - gameState.ball.getY();
+			canTravelY2 = limitY - ballY;
 		}
 		return canTravelY2;
 	}
 	
 	private void moveBall(double canTravelX, double canTravelY){
-		gameState.ball.setX(gameState.ball.getX()+canTravelX);
-		gameState.ball.setY(gameState.ball.getY()+canTravelY);
+		gameState.ball.setX(ballX+canTravelX);
+		gameState.ball.setY(ballY+canTravelY);
 		dXRemaining -= canTravelX;
 		dYRemaining -= canTravelY;
 	}
@@ -192,8 +203,7 @@ public class GameLoop {
 			bounceY();
 		}
 		else {
-			// + 10 to stop mental angles! Seb: do better I don't understand maths
-			double maxSpin = (gameState.paddle.getW()+10) / 2;
+			double maxSpin = (gameState.paddle.w+20) / 2;
 			double spin = diff / maxSpin;
 			
 			double shootAngle = 90 - (90 * spin);

@@ -11,7 +11,7 @@ public abstract class Sprite_Trail extends Sprite {
 	int[] trailX, trailY;
 	
 	public Sprite_Trail(Drawable drawable, GameRenderer renderer) {
-		super(drawable, renderer);
+		super(drawable, renderer,0,0);
 		// this probably isn't a brick... let's display movement trails.
 		trailX = new int[TRAILLENGTH];
 		trailY = new int[TRAILLENGTH];

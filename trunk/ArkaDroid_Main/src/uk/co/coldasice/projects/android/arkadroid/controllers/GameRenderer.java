@@ -17,8 +17,8 @@ public class GameRenderer {
 	private Paint paint = new Paint();
 	private Bitmap imgBackground;
 	private GameState gameState;
-	private int w;
-	private int h;
+	public int w;
+	public int h;
 	private GameLoop gameLoop;
 	
 	private static final DecimalFormat df = new DecimalFormat("0.000");
@@ -68,14 +68,6 @@ public class GameRenderer {
 		this.w = width;
 		this.h = height;
 		imgBackground = Bitmap.createScaledBitmap(imgBackground, w, h, true);
-	}
-
-	public int getW() {
-		return w;
-	}
-
-	public int getH() {
-		return h;
 	}
 
 }

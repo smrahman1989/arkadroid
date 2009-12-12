@@ -69,20 +69,27 @@ public class TiltListener implements SensorEventListener{
 		if ((currentTime - lastUpdate) > 100) {
 			lastUpdate = currentTime;
 			double absvalue = Math.abs(event.values[2]);
+			double speed = 0.0;
+			boolean left = false;
+			boolean right = false;
 			if (absvalue > DEADSPOT) {
 				if (event.values[2] > 0){
-					if (tilt==Tilt.RIGHT) gameThread.changedRight(0, false);
-					gameThread.changedLeft((absvalue-DEADSPOT)/TILTSPEED, true);
+					if (tilt==Tilt.RIGHT) right = false;
+					left = true;
+					speed = (absvalue-DEADSPOT)/TILTSPEED;
 					tilt = Tilt.LEFT;
 				}
 				else{
-					if (tilt==Tilt.LEFT) gameThread.changedLeft(0, false);
-					gameThread.changedRight((absvalue-DEADSPOT)/TILTSPEED, true);
+					if (tilt==Tilt.LEFT) left = false;
+					right = true;
+					speed = (absvalue-DEADSPOT)/TILTSPEED;
 					tilt = Tilt.RIGHT;
 				}
+				gameThread.changedBoth(speed, left, right);
+				
 			} else {
 				if (tilt==Tilt.LEFT) gameThread.changedLeft(0, false);
-				if (tilt==Tilt.RIGHT) gameThread.changedRight(0, false);
+				else if (tilt==Tilt.RIGHT) gameThread.changedRight(0, false);
 				tilt = Tilt.NONE;
 			}
 		}

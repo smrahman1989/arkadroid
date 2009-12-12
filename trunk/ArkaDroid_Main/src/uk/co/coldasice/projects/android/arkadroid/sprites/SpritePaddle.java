@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable;
 
 public class SpritePaddle extends Sprite_Trail {
 	
-	private static final double SPEED_DECEL = 1.0;
 	private static final double SPEED_ACCEL = 0.5;
 	
 	private double topSpeed = 4.0;
@@ -35,29 +34,27 @@ public class SpritePaddle extends Sprite_Trail {
 		// left pressed?
 		if(leftPressed && !rightPressed){
 			currentSpeedLeft = adjustPressedSpeed(currentSpeedLeft);
-			currentSpeedRight = Math.max(0, currentSpeedRight-SPEED_DECEL);
+			currentSpeedRight = Math.max(0, currentSpeedRight-SPEED_ACCEL);
 		}
 		// right pressed?
 		else if(rightPressed && !leftPressed){
 			currentSpeedRight = adjustPressedSpeed(currentSpeedRight);
-			currentSpeedLeft = Math.max(0, currentSpeedLeft-SPEED_DECEL);
+			currentSpeedLeft = Math.max(0, currentSpeedLeft-SPEED_ACCEL);
 		}
 		// nothing pressed, or both pressed? decelerate the ball towards 0,
 		// the move the ball at the new speed in the original direction
 		// it was going
 		else  {
 			// slow down the paddle 
-			currentSpeedLeft = Math.max(0, currentSpeedLeft-SPEED_DECEL);
-			currentSpeedRight = Math.max(0, currentSpeedRight-SPEED_DECEL);
+			currentSpeedLeft = Math.max(0, currentSpeedLeft-SPEED_ACCEL);
+			currentSpeedRight = Math.max(0, currentSpeedRight-SPEED_ACCEL);
 		}
 		setX(x + ((currentSpeedRight-currentSpeedLeft)*timediff));
 	}
 	
 	private double adjustPressedSpeed(double currentSpeed){
-		if (currentSpeed < topSpeed) {
-			return Math.min(topSpeed,currentSpeed+SPEED_ACCEL);
-		}
-		if(currentSpeed > topSpeed) return Math.max(0,currentSpeed-SPEED_DECEL);
+		if (currentSpeed < topSpeed) return Math.min(topSpeed,currentSpeed+SPEED_ACCEL);
+		if (currentSpeed > topSpeed) return Math.max(0,currentSpeed-SPEED_ACCEL);
 		return currentSpeed;
 		
 	}
