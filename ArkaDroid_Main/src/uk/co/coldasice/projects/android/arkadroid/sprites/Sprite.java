@@ -98,8 +98,8 @@ public abstract class Sprite {
 		this.setYMiddle(y);
 	}
 	
-	public boolean collidesWith(Sprite sp) {
-		return getBounds().intersect(sp.getBounds());
+	public boolean collidesWith(Rect rect) {
+		return getBounds().intersect(rect);
 	}
 
 	Rect getBounds() {
