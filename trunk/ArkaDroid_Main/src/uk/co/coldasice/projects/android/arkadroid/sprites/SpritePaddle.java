@@ -63,6 +63,10 @@ public class SpritePaddle extends Sprite_Trail {
 	}
 	
 	public void reset() {
+		currentSpeedLeft = 0;
+		currentSpeedRight = 0;
+		leftPressed = false;
+		rightPressed = false;
 		super.reset();
 	}
 

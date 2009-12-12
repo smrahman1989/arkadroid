@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 
 public class SpriteBall extends Sprite_Trail {
 	private static final double INITIAL_DXY = 1.5;
+	public static final double MAX_SPEED = 7;
 
 	public double dx = INITIAL_DXY;
 	public double dy = INITIAL_DXY;
@@ -14,7 +15,11 @@ public class SpriteBall extends Sprite_Trail {
 	}
 
 	public double speed() {
-		return Math.sqrt((dx * dx) + (dy * dy));
+		return speed(dx,dy);
+	}
+	
+	public static double speed(double _dx, double _dy) {
+		return Math.sqrt((_dx * _dx) + (_dy * _dy));
 	}
 	
 	@Override
