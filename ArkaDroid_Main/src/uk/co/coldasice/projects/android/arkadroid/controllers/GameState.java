@@ -21,7 +21,7 @@ public class GameState {
 
 	private static final int MAX_LIVES = 5;
 
-	private int livesLeft = MAX_LIVES + 1;
+	int livesLeft = MAX_LIVES + 1;
 	// sprites
 	public SpriteBall ball;
 	public SpritePaddle paddle;
@@ -31,6 +31,9 @@ public class GameState {
 	int currentScore = 0;
 	boolean winner = false;
 	String infoText = "";
+	String wonText;
+	String diedText;
+	String livesText;
 	private GameRenderer renderer;
 	
 	public GameState() {
@@ -40,12 +43,9 @@ public class GameState {
 		this.renderer = renderer;
 		ball = new SpriteBall(r.getDrawable(R.drawable.ball), renderer);
 		paddle = new SpritePaddle(r.getDrawable(R.drawable.paddle), renderer);
-		paddle.setYEdge(renderer.h-5);
-		paddle.setXMiddle(renderer.w/2);
-		ball.setXMiddle(renderer.w/2);
 		bricks = new ArrayList<SpriteBrick>();
 		Drawable brickImg = r.getDrawable(R.drawable.brick);
-		int paddingTop = 40;
+		int paddingTop = 20;
 		int paddingSides = 60;
 		int howManyBricks = (renderer.w-paddingSides) / brickImg.getIntrinsicWidth();
 		int brickOffsetX = (renderer.w - (howManyBricks * brickImg.getIntrinsicWidth())) / 2;
@@ -56,7 +56,9 @@ public class GameState {
 						(j * brickImg.getIntrinsicHeight()) + paddingTop);
 				bricks.add(brick);
 			}
-		} 
+		}
+		wonText = r.getString(R.string.won_text);
+		diedText = r.getString(R.string.died_text);
 	}
 	
 	public boolean isRunning() {
@@ -92,29 +94,24 @@ public class GameState {
 		}
 		if (livesLeft <= 0) {
 			fullReset = true;
-			infoText = "You died";
+			infoText = diedText;
 			livesLeft = MAX_LIVES;
 		}
 		else {
 			if (winner) {
 				fullReset = true;
-				infoText = "YOU WON!";
+				infoText = wonText;
 				livesLeft = MAX_LIVES;
 			}
-			else infoText = "Lives left: " + livesLeft;
-			
 		}
 		paddle.reset();
-		paddle.setYEdge(renderer.h-5);
-		paddle.setXMiddle(renderer.w/2);
-		ball.setXYMiddle(renderer.w/2, 150);
+		ball.reset();
 		if (fullReset) {
 			currentScore = 0;
 			for (SpriteBrick sp: bricks) {
 				sp.unkill();
 			}
 		}
-		ball.reset();
 	}
 
 }

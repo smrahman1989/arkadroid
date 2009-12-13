@@ -12,6 +12,7 @@ public class SpriteBall extends Sprite_Trail {
 	
 	public SpriteBall(Drawable drawable, GameRenderer renderer) {
 		super(drawable, renderer);
+		reset();
 	}
 
 	public double speed() {
@@ -22,11 +23,11 @@ public class SpriteBall extends Sprite_Trail {
 		return Math.sqrt((_dx * _dx) + (_dy * _dy));
 	}
 	
-	@Override
 	public void reset() {
 		super.reset();
 		dx = INITIAL_DXY;
 		dy = INITIAL_DXY;
+		setXYMiddle(renderer.w/2,renderer.h/2);
 	}
 	
 }

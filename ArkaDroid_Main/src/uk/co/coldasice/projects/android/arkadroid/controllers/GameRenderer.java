@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 
 import uk.co.coldasice.projects.android.arkadroid.R;
 import uk.co.coldasice.projects.android.arkadroid.sprites.Sprite;
+import uk.co.coldasice.projects.android.arkadroid.sprites.SpriteBrick;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,8 +21,10 @@ public class GameRenderer {
 	public int w;
 	public int h;
 	private GameLoop gameLoop;
+	private final String startText;
+	private final String scoreText;
+	private final String livesText;
 	
-	private static final DecimalFormat df = new DecimalFormat("0.000");
 		
 	public GameRenderer(GameState gameState, GameLoop gameloop, Resources r) {
 		this.gameState = gameState;
@@ -34,6 +37,9 @@ public class GameRenderer {
 		DisplayMetrics disp = r.getDisplayMetrics();
 		this.w = disp.widthPixels;
 		this.h = disp.heightPixels;
+		startText = r.getString(R.string.start_text);
+		scoreText = r.getString(R.string.score_text);
+		livesText = r.getString(R.string.lives_text);
 	}
 	
 	public void reset() {
@@ -43,23 +49,28 @@ public class GameRenderer {
 	public void render(Canvas canv) {
 
 		canv.drawBitmap(imgBackground, 0, 0, null);
-		for (Sprite sp: gameState.bricks) sp.draw(canv);
+		paint.setColor(Color.RED);
+		paint.setAlpha(128);
+		canv.drawRect(0, h-55, w, h, paint);
+		paint.setColor(Color.WHITE);
+		paint.setAlpha(255);
+		for (int i=0;i<gameState.bricks.size();i++) {
+			gameState.bricks.get(i).draw(canv);
+		}
 		gameState.ball.draw(canv);
 		gameState.paddle.draw(canv);
 		
 		if (gameState.isPaused()) {
 			paint.setTextSize(25);
-			canv.drawText("Press any key to start", 40, h/2, paint);
+			canv.drawText(startText, 40, h/2, paint);
 		}
 		else {
 			paint.setTextSize(12);
 			canv.drawText(gameState.infoText, 10, 14, paint);
-			canv.drawText("Speed: " + df.format(gameState.ball.speed()), 80, 14, paint);
-			canv.drawText("Score: " + (gameState.currentScore + gameState.getScoreToAdd()), 10, 28, paint);
-			canv.drawText("Timediff: " + df.format(gameLoop.timediff), 80, 28, paint);
-			canv.drawText("Paddle: " + df.format(gameState.paddle.getPaddleSpeed()) 
-					+ " L:"+gameState.paddle.leftPressed
-					+ " R:"+gameState.paddle.rightPressed, 160, 14, paint);
+			canv.drawText(scoreText, 90, 14, paint);
+			canv.drawText(Integer.toString(gameState.currentScore + gameState.getScoreToAdd()), 130, 14, paint);
+			canv.drawText(livesText, 170, 14, paint);
+			canv.drawText(Integer.toString(gameState.livesLeft), 230, 14, paint);
 		}
 		
 	}

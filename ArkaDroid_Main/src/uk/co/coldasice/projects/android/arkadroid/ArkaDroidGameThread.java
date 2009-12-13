@@ -20,7 +20,7 @@ public class ArkaDroidGameThread extends Thread {
 	private long nextRender;
 	private final double PADDLE_SPEED = 4.0;
 	public final int RENDER_EVERY_MS = 30;
-	private final int SLEEP_FOR_MS = 10;
+	private final int SLEEP_FOR_MS = 5;
 
 	private GameRenderer renderer;
 
@@ -41,13 +41,15 @@ public class ArkaDroidGameThread extends Thread {
 
 	@Override
 	public void run() {
+		try { Thread.sleep(SLEEP_FOR_MS); } catch (InterruptedException e) {	}
 		Canvas canv;
 		resetSafe = true;
 		reset();
 		while (mRun) {
 			canv = null;
 			try {
-				if (gameloop.lastupdate > nextRender) canv = this.holder.lockCanvas();
+				long now = System.currentTimeMillis();
+				if (now > nextRender) canv = this.holder.lockCanvas();
 				synchronized (holder) {
 					if (gameState.isRunning()) {
 						resetSafe = true;
@@ -58,7 +60,7 @@ public class ArkaDroidGameThread extends Thread {
 						renderer.render(canv);
 						gameState.ball.updateTrails();
 						gameState.paddle.updateTrails();
-						nextRender = gameloop.lastupdate + RENDER_EVERY_MS;
+						nextRender = now + RENDER_EVERY_MS;
 					}
 				}
 			}
@@ -75,6 +77,7 @@ public class ArkaDroidGameThread extends Thread {
 		gameState.reset();
 		renderer.reset();
 		gameloop.reset();
+		resetSafe = false;
 	}
 
 	public void pause() {
