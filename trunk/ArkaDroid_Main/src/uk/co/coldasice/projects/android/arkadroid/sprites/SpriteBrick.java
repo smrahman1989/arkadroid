@@ -12,8 +12,6 @@ public class SpriteBrick extends Sprite {
 	
 	private boolean killed = false;
 	
-	int alpha = 255;
-	
 	public SpriteBrick(Drawable drawable, GameRenderer renderer, int brickColour, double _x, double _y) {
 		super(drawable, renderer, _x, _y);
 		colour = new ShapeDrawable(new RectShape());
@@ -25,22 +23,14 @@ public class SpriteBrick extends Sprite {
 	protected void postDraw(Canvas canv) {
 		this.colour.setAlpha(alpha);
 		this.colour.draw(canv);
+		if (killed) alpha -=32;
 	}
 
 	@Override
-	protected void preDraw(Canvas canv) {
+	protected boolean preDraw(Canvas canv) {
+		if (killed && alpha < 0) return false;
 		// nothing needed at the moment
-	}
-	
-	@Override
-	public void draw(Canvas canv) {
-		if (killed && alpha<0) return;
-		//preDraw(canv);
-		this.drawable.setBounds((int)x, (int)y, (int)(x+w), (int)(y+h));
-		this.drawable.setAlpha(alpha);
-		this.drawable.draw(canv);
-		postDraw(canv);
-		if (killed) alpha -=64;
+		return true;
 	}
 	
 	public void kill() {

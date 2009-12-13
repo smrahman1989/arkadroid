@@ -31,13 +31,14 @@ public abstract class Sprite_Trail extends Sprite {
 	}
 	
 	@Override
-	protected void preDraw(Canvas canv) {
+	protected boolean preDraw(Canvas canv) {
 		for (int i=latestTrail,j=0;j<TRAILLENGTH;i=i>0?i-1:TRAILLENGTH-1,j++) {
 			this.drawable.setBounds(trailX[i], trailY[i], (trailX[i] + (int)w), (trailY[i] + (int)h));
 			int alpha = (int)(255d * (TRAILLENGTH - (j+1)) / TRAILLENGTH);
 			this.drawable.setAlpha(alpha);
 			this.drawable.draw(canv);
 		}
+		return true;
 	}
 
 	@Override

@@ -14,6 +14,7 @@ public abstract class Sprite {
 	public double h;
 	private GameRenderer renderer;
 	Rect rect = new Rect();
+	protected int alpha = 255;
 	
 	public Sprite(Drawable drawable, GameRenderer renderer, double _x, double _y) {
 		this.drawable = drawable;
@@ -24,15 +25,17 @@ public abstract class Sprite {
 		this.renderer = renderer;
 	}
 	
-	public void draw (Canvas canv) {
-		preDraw(canv);
+	public final void draw (Canvas canv) {
+		boolean continueDraw = preDraw(canv);
+		// preDraw finished with false? Stop now
+		if (!continueDraw) return;
 		this.drawable.setBounds((int)x, (int)y, (int)(x+w), (int)(y+h));
-		this.drawable.setAlpha(255);
+		this.drawable.setAlpha(alpha);
 		this.drawable.draw(canv);
 		postDraw(canv);
 	}
 	
-	protected abstract void preDraw(Canvas canv);
+	protected abstract boolean preDraw(Canvas canv);
 	protected abstract void postDraw(Canvas canv);
 	
 	public void setX(double x) {
