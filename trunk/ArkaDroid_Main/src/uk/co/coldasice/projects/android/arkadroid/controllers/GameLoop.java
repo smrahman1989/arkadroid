@@ -11,7 +11,7 @@ public class GameLoop {
 	
 	private GameState gameState;
 	double timediff;
-	public long lastupdate;
+	private long lastupdate;
 	
 	private double dXRemaining,dYRemaining;
 	
@@ -47,7 +47,7 @@ public class GameLoop {
 			ballY = gameState.ball.y;
 			
 			//Loser ??
-			if (ballY + ballH >= gameState.paddle.y + gameState.paddle.h) {
+			if (ballY >= gameState.paddle.y + gameState.paddle.h) {
 				gameState.setPaused();
 				return;
 			}
@@ -68,7 +68,8 @@ public class GameLoop {
 			boolean allDead = true;
 			
 			//Have you hit a brick?
-			for (SpriteBrick brick: gameState.bricks) {
+			for (int i=0;i<gameState.bricks.size();i++) {
+				SpriteBrick brick = gameState.bricks.get(i);
 				if (brick.dead()) continue;
 				allDead = false;
 				if (brick.collidesWith(newBallBound)) {

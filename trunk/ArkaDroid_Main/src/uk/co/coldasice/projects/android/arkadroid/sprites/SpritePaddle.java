@@ -15,6 +15,7 @@ public class SpritePaddle extends Sprite_Trail {
 	
 	public SpritePaddle(Drawable drawable, GameRenderer renderer) {
 		super(drawable, renderer);
+		reset();
 	}
 	
 	public void setRightPressed(boolean pressed) {
@@ -64,6 +65,8 @@ public class SpritePaddle extends Sprite_Trail {
 		currentSpeedRight = 0;
 		leftPressed = false;
 		rightPressed = false;
+		setYEdge(renderer.h-60);
+		setXMiddle(renderer.w/2);
 		super.reset();
 	}
 

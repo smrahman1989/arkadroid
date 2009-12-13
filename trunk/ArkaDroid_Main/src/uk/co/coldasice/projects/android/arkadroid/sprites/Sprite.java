@@ -12,7 +12,7 @@ public abstract class Sprite {
 	public double x;
 	public double w;
 	public double h;
-	private GameRenderer renderer;
+	protected GameRenderer renderer;
 	Rect rect = new Rect();
 	protected int alpha = 255;
 	
