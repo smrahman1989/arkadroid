@@ -70,7 +70,9 @@ public class ArkaDroidView extends SurfaceView implements SurfaceHolder.Callback
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		return gameThread.onTouchEvent(event);
+		boolean handled = gameThread.onTouchEvent(event);
+		try { Thread.sleep(20); } catch(Exception e) {}
+		return handled;
 	}
 	
 	public ArkaDroidGameThread getGameThread() {

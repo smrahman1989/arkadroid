@@ -68,9 +68,9 @@ public class GameRenderer {
 			paint.setTextSize(12);
 			canv.drawText(gameState.infoText, 10, 14, paint);
 			canv.drawText(scoreText, 90, 14, paint);
-			canv.drawText(Integer.toString(gameState.currentScore + gameState.getScoreToAdd()), 130, 14, paint);
+			canv.drawText(gameState.scoreStr, 130, 14, paint);
 			canv.drawText(livesText, 170, 14, paint);
-			canv.drawText(Integer.toString(gameState.livesLeft), 230, 14, paint);
+			canv.drawText(gameState.livesLeftStr, 230, 14, paint);
 		}
 		
 	}

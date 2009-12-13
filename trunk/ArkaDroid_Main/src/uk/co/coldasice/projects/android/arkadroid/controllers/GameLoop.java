@@ -1,6 +1,7 @@
 package uk.co.coldasice.projects.android.arkadroid.controllers;
 
 import android.graphics.Rect;
+import android.util.Log;
 import uk.co.coldasice.projects.android.arkadroid.controllers.GameState;
 import uk.co.coldasice.projects.android.arkadroid.sprites.SpriteBall;
 import uk.co.coldasice.projects.android.arkadroid.sprites.SpriteBrick;
@@ -34,9 +35,14 @@ public class GameLoop {
 		long now = System.currentTimeMillis();
 		timediff = (now - lastupdate) / PHYSICS_SPEED;
 		lastupdate = now;
+		if (timediff>10.0) {
+			timediff = 10.0;
+		}
 		
 		//Move Paddle
 		gameState.paddle.update(timediff);
+		
+		if(gameState.ball.onPaddle)return;
 		
 		//Set total delta X and Y required for this update
 		dXRemaining = gameState.ball.dx*timediff;
@@ -77,6 +83,7 @@ public class GameLoop {
 					brick.kill();
 					// add one to the current run (how many bricks killed in a row)
 					gameState.bricksKilledInARow++;
+					gameState.updateScoreString();
 					
 					//Limit is the edge of the brick facing the ball
 					limitX = brick.x;

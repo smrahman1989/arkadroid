@@ -6,6 +6,7 @@ import uk.co.coldasice.projects.android.arkadroid.controllers.GameState;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -20,7 +21,7 @@ public class ArkaDroidGameThread extends Thread {
 	private long nextRender;
 	private final double PADDLE_SPEED = 4.0;
 	public final int RENDER_EVERY_MS = 30;
-	private final int SLEEP_FOR_MS = 5;
+	private final int SLEEP_FOR_MS = 10;
 
 	private GameRenderer renderer;
 
@@ -128,33 +129,37 @@ public class ArkaDroidGameThread extends Thread {
 	}
 	
 	boolean keyUp(int keyCode, KeyEvent msg) {
+		if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT){
+			changedLeft(PADDLE_SPEED,false);
+			return true;
+		}
+		else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT){
+			changedRight(PADDLE_SPEED,false);
+			return true;
+		}
+		return false;
+	}
+
+	public boolean keyDown(int keyCode, KeyEvent msg) {
 		boolean handled = false;
 		if (gameState.isPaused()) {
 			gameGo();
 			handled = true;
 		}
-		if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT){
-			changedLeft(PADDLE_SPEED,false);
-			handled = true;
-		}
-		else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT){
-			changedRight(PADDLE_SPEED,false);
-			handled = true;
-		}
-		return handled;
-	}
-
-	public boolean keyDown(int keyCode, KeyEvent msg) {
 		if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
 			changedLeft(PADDLE_SPEED,true);
-			return true;
+			handled = true;
 		}
 		else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
 			changedRight(PADDLE_SPEED,true);
-			return true;
+			handled = true;
+		}
+		else if (gameState.ball.onPaddle && (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_CENTER)){
+			gameState.ball.onPaddle = false;
+			handled = true;
 		}
 		
-		return false;
+		return handled;
 	}
 
 	public boolean onTouchEvent(MotionEvent event) {
@@ -162,12 +167,16 @@ public class ArkaDroidGameThread extends Thread {
 		int width = renderer.w;
 		switch (action) {
 			case MotionEvent.ACTION_DOWN: {
+				if (gameState.isPaused()) {
+					gameGo();
+				}
 				int where = (int)event.getX();
 				if (where < width/3) changedLeft(PADDLE_SPEED,true);
 				else if (where > (width - width/3)) changedRight(PADDLE_SPEED,true);
 				return true;
 			}
-			case MotionEvent.ACTION_UP: {
+			case MotionEvent.ACTION_UP:
+			case MotionEvent.ACTION_CANCEL:{
 				changedBoth(PADDLE_SPEED, false, false);
 				return true;
 			}
