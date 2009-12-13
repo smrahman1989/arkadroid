@@ -20,20 +20,24 @@ public class GameState {
 	private static final Random random = new Random();
 
 	private static final int MAX_LIVES = 5;
-
-	int livesLeft = MAX_LIVES + 1;
+	private int livesLeft = MAX_LIVES + 1;
+	private int currentScore = 0;
+	
+	String livesLeftStr = Integer.toString(livesLeft);
+	String scoreStr = Integer.toString(currentScore);
+	
 	// sprites
 	public SpriteBall ball;
 	public SpritePaddle paddle;
 	ArrayList<SpriteBrick> bricks;
 	
 	int bricksKilledInARow = 0;
-	int currentScore = 0;
 	boolean winner = false;
 	String infoText = "";
 	String wonText;
 	String diedText;
 	String livesText;
+	
 	private GameRenderer renderer;
 	
 	public GameState() {
@@ -42,7 +46,7 @@ public class GameState {
 	public void init(Resources r, GameRenderer renderer) {
 		this.renderer = renderer;
 		ball = new SpriteBall(r.getDrawable(R.drawable.ball), renderer);
-		paddle = new SpritePaddle(r.getDrawable(R.drawable.paddle), renderer);
+		paddle = new SpritePaddle(r.getDrawable(R.drawable.paddle), renderer, ball);
 		bricks = new ArrayList<SpriteBrick>();
 		Drawable brickImg = r.getDrawable(R.drawable.brick);
 		int paddingTop = 20;
@@ -112,6 +116,13 @@ public class GameState {
 				sp.unkill();
 			}
 		}
+		livesLeftStr = Integer.toString(livesLeft);
+		scoreStr = Integer.toString(currentScore);
+	}
+	
+	public void updateScoreString(){
+		scoreStr = Integer.toString(currentScore+getScoreToAdd());
+
 	}
 
 }

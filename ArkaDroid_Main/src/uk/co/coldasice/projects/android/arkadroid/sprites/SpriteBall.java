@@ -10,9 +10,10 @@ public class SpriteBall extends Sprite_Trail {
 	public double dx = INITIAL_DXY;
 	public double dy = INITIAL_DXY;
 	
+	public boolean onPaddle = true;
+	
 	public SpriteBall(Drawable drawable, GameRenderer renderer) {
 		super(drawable, renderer);
-		reset();
 	}
 
 	public double speed() {
@@ -25,9 +26,9 @@ public class SpriteBall extends Sprite_Trail {
 	
 	public void reset() {
 		super.reset();
-		dx = INITIAL_DXY;
+		dx = 0;
 		dy = INITIAL_DXY;
-		setXYMiddle(renderer.w/2,renderer.h/2);
+		onPaddle = true;
 	}
 	
 }

@@ -13,8 +13,11 @@ public class SpritePaddle extends Sprite_Trail {
 	public boolean rightPressed = false;
 	public boolean leftPressed = false;
 	
-	public SpritePaddle(Drawable drawable, GameRenderer renderer) {
+	private final SpriteBall ball;
+	
+	public SpritePaddle(Drawable drawable, GameRenderer renderer, SpriteBall _ball) {
 		super(drawable, renderer);
+		ball = _ball;
 		reset();
 	}
 	
@@ -51,6 +54,7 @@ public class SpritePaddle extends Sprite_Trail {
 			currentSpeedRight = Math.max(0, currentSpeedRight-SPEED_ACCEL);
 		}
 		setX(x + ((currentSpeedRight-currentSpeedLeft)*timediff));
+		if(ball.onPaddle)ball.setXMiddle(getMidX()+10);
 	}
 	
 	private double adjustPressedSpeed(double currentSpeed){
@@ -67,6 +71,9 @@ public class SpritePaddle extends Sprite_Trail {
 		rightPressed = false;
 		setYEdge(renderer.h-60);
 		setXMiddle(renderer.w/2);
+		ball.setXMiddle(getMidX()+10);
+		ball.setYEdge(y);
+		
 		super.reset();
 	}
 
