@@ -6,7 +6,6 @@ import uk.co.coldasice.projects.android.arkadroid.controllers.GameState;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -35,7 +34,7 @@ public class ArkaDroidGameThread extends Thread {
 		Resources r = context.getResources();
 		this.gameState = new GameState();
 		this.gameloop = new GameLoop(gameState);
-		this.renderer = new GameRenderer(gameState, gameloop, r);
+		this.renderer = new GameRenderer(gameState, r);
 		gameState.init(r, renderer);
 		gameloop.init();
 	}

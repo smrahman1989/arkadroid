@@ -1,7 +1,6 @@
 package uk.co.coldasice.projects.android.arkadroid.controllers;
 
 import android.graphics.Rect;
-import android.util.Log;
 import uk.co.coldasice.projects.android.arkadroid.controllers.GameState;
 import uk.co.coldasice.projects.android.arkadroid.sprites.SpriteBall;
 import uk.co.coldasice.projects.android.arkadroid.sprites.SpriteBrick;
