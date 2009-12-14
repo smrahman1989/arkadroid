@@ -38,13 +38,10 @@ public class GameState {
 	String diedText;
 	String livesText;
 	
-	private GameRenderer renderer;
-	
 	public GameState() {
 	}
 
 	public void init(Resources r, GameRenderer renderer) {
-		this.renderer = renderer;
 		ball = new SpriteBall(r.getDrawable(R.drawable.ball), renderer);
 		paddle = new SpritePaddle(r.getDrawable(R.drawable.paddle), renderer, ball);
 		bricks = new ArrayList<SpriteBrick>();

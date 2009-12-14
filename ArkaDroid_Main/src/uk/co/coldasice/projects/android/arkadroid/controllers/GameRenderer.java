@@ -1,10 +1,7 @@
 package uk.co.coldasice.projects.android.arkadroid.controllers;
 
-import java.text.DecimalFormat;
 
 import uk.co.coldasice.projects.android.arkadroid.R;
-import uk.co.coldasice.projects.android.arkadroid.sprites.Sprite;
-import uk.co.coldasice.projects.android.arkadroid.sprites.SpriteBrick;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,15 +17,13 @@ public class GameRenderer {
 	private GameState gameState;
 	public int w;
 	public int h;
-	private GameLoop gameLoop;
 	private final String startText;
 	private final String scoreText;
 	private final String livesText;
 	
 		
-	public GameRenderer(GameState gameState, GameLoop gameloop, Resources r) {
+	public GameRenderer(GameState gameState, Resources r) {
 		this.gameState = gameState;
-		this.gameLoop = gameloop;
 		paint.setStyle(Paint.Style.FILL);
 		paint.setAntiAlias(true);
 		paint.setStrokeWidth(1);
