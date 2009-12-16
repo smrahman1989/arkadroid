@@ -1,5 +1,6 @@
 package uk.co.coldasice.projects.android.arkadroid;
 
+import uk.co.coldasice.projects.android.arkadroid.controllers.SoundController;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,7 +20,8 @@ public class ArkaDroid extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-        // turn off the window's title bar
+		SoundController.init(getBaseContext());
+		// turn off the window's title bar
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         // tell system to use the layout defined in our XML file
