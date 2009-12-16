@@ -105,18 +105,17 @@ public class GameLoop {
 			//If you missed the bricks maybe you hit the paddle
 			if(!brickHit){
 				if(gameState.paddle.collidesWith(newBallBound)){
-					SoundController.playPaddleSound();
 					paddleHit = true;
 					//Limit is the edge of the paddle facing the ball
 					limitX = gameState.paddle.x;
 					if(dXRemaining < 0)limitX += gameState.paddle.w;
 					limitY = gameState.paddle.y;
 					if(dYRemaining < 0)limitY += gameState.paddle.h;
+					SoundController.playPaddleSound();
 				}
 			}
 			//If moving left i.e. dX >= 0 check X limit
 			if(dXRemaining >= 0.0 && newX >= limitX-ballW){
-				//SoundController.playWallSound();
 				double canTravelX = (limitX-ballW)-ballX;
 				double canTravelY = (canTravelX/dXRemaining)*dYRemaining;	
 				//Check max Y distance
@@ -125,12 +124,12 @@ public class GameLoop {
 				if(swapAxis(canTravelY,canTravelY2)){	
 					moveBall(canTravelX,canTravelY);
 					bounceX();
+					if(!brickHit && !paddleHit)SoundController.playWallSound();
 					continue;
 				}
 			}
 			//If moving right i.e. dX < 0 check X limit
 			if(dXRemaining < 0.0 && newX < limitX){
-				SoundController.playWallSound();
 				double canTravelX = limitX - ballX;
 				double canTravelY = (canTravelX/dXRemaining)*dYRemaining;
 				double canTravelY2 = checkY(newY,limitY);
@@ -138,6 +137,7 @@ public class GameLoop {
 				if(swapAxis(canTravelY,canTravelY2)){
 					moveBall(canTravelX,canTravelY);
 					bounceX();
+					if(!brickHit && !paddleHit)SoundController.playWallSound();
 					continue;
 				}
 			}	
@@ -151,17 +151,18 @@ public class GameLoop {
 				if(paddleHit)paddleHit();
 				else {
 					bounceY();
+					if(!brickHit)SoundController.playWallSound();
 				}
 				continue;
 			}
 			//If moving up i.e. dY < 0 check Y limit
 			if(dYRemaining < 0.0 && newY < limitY){
-				SoundController.playWallSound();
 				double canTravelY = limitY - ballY;
 				double canTravelX = (canTravelY/dYRemaining)*dXRemaining;
 				//Always move ball. Earlier checks would have continued in X limit crossed first.
 				moveBall(canTravelX,canTravelY);
 				bounceY();
+				if(!brickHit && !paddleHit)SoundController.playWallSound();
 				continue;
 			}
 			moveBall(dXRemaining,dYRemaining);
