@@ -16,7 +16,7 @@ public class SoundController {
 	private static Random rand;
 
 	public static void init(Context context) {
-		sounds = new SoundPool(20, AudioManager.STREAM_MUSIC, 0);
+		sounds = new SoundPool(4, AudioManager.STREAM_MUSIC, 0);
 		BRICK_SOUNDS[0] = sounds.load(context, R.raw.board1, 1);
 		BRICK_SOUNDS[1] = sounds.load(context, R.raw.board2, 1);
 		BRICK_SOUNDS[2] = sounds.load(context, R.raw.wood1, 1);
@@ -29,23 +29,23 @@ public class SoundController {
 		PADDLE_SOUNDS[1] = sounds.load(context, R.raw.paddle2, 1);
 
 		VICTORY_SOUNDS[0] = sounds.load(context, R.raw.cheer1, 1);
-		VICTORY_SOUNDS[0] = sounds.load(context, R.raw.starwars, 1);
+		VICTORY_SOUNDS[1] = sounds.load(context, R.raw.starwars, 1);
 		rand = new Random(System.currentTimeMillis());
 	}
 
 	public static void playPaddleSound() {
-		sounds.play(PADDLE_SOUNDS[(int)(rand.nextFloat()*PADDLE_SOUNDS.length)], 1, 1, 1, 0, 1);
+		sounds.play(PADDLE_SOUNDS[rand.nextInt(PADDLE_SOUNDS.length)], 1, 1, 1, 0, 1);
 	}
 
 	public static void playWallSound() {
-		sounds.play(WALL_SOUNDS[(int)(rand.nextFloat()*WALL_SOUNDS.length)], 1, 1, 1, 0, 1);
+		sounds.play(WALL_SOUNDS[rand.nextInt(WALL_SOUNDS.length)], 1, 1, 1, 0, 1);
 	}
 
 	public static void playBrickSound() {
-		sounds.play(BRICK_SOUNDS[(int)(rand.nextFloat()*BRICK_SOUNDS.length)], 1, 1, 1, 0, 1);
+		sounds.play(BRICK_SOUNDS[rand.nextInt(BRICK_SOUNDS.length)], 1, 1, 1, 0, 1);
 	}
 
 	public static void playVictorySound() {
-		sounds.play(VICTORY_SOUNDS[(int)(rand.nextFloat()*VICTORY_SOUNDS.length)], 1, 1, 1, 0, 1);
+		sounds.play(VICTORY_SOUNDS[rand.nextInt(VICTORY_SOUNDS.length)], 1, 1, 1, 0, 1);
 	}
 }
