@@ -2,6 +2,7 @@ package uk.co.coldasice.projects.android.arkadroid;
 
 import uk.co.coldasice.projects.android.arkadroid.controllers.SoundController;
 import android.app.Activity;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -39,6 +40,7 @@ public class ArkaDroid extends Activity {
         } else {
             Log.w(this.getClass().getName(), "sis isn't null. that's odd.");
         }
+        this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
 	}
 	
 	@Override
